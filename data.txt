@@ -25,3 +25,4 @@ num_btn_active_fore = #787878
 
 [info]
 auto_update = False
+
