@@ -15,6 +15,8 @@ Some of the processes that are going to be visualized with different diagrams: *
     <img src="github_images/Isoprocess_eng.jpg" title="Iso processes">
 </a>
 
+<p align="right">(<a href="#top" title="to the top of the page">back to top</a>)</p>
+
 
 # Приложение по физике
 Данное приложение будет визуализировать некоторые термодинамические процессы, основываясь на введеных параметрах (температура, давление, объем газа). \
@@ -29,4 +31,4 @@ Some of the processes that are going to be visualized with different diagrams: *
     <img src="github_images/Isoprocess_ru.jpg" title="Изопроцессы">
 </a>
 
-
+<p align="right">(<a href="#top" title="to the top of the page">back to top</a>)</p>
