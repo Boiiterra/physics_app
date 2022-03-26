@@ -1,5 +1,5 @@
-+ [English](#physics-app)
-+ [Русский](#приложение-по-физике)
++ [Description in english language](#physics-app)
++ [Описание на русском языке](#приложение-по-физике)
 
 # Physics app
 This app is going to visualize some thermodynamic process based on input data (gas temperature, pressure, value). \
