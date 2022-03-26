@@ -1,5 +1,5 @@
-## Languages
-+ [English](#зhysics-app)
+### Languages:
++ [English](#physics-app)
 + [Русский](#приложение-по-физике)
 
 # Physics app
