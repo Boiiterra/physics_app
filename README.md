@@ -1,4 +1,3 @@
-### Languages:
 + [English](#physics-app)
 + [Русский](#приложение-по-физике)
 
