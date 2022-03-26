@@ -1,5 +1,7 @@
+___
 + [Description in english language](#physics-app)
 + [Описание на русском языке](#приложение-по-физике)
+___
 
 # Physics app
 This app is going to visualize some thermodynamic process based on input data (gas temperature, pressure, value). \
@@ -10,9 +12,7 @@ Some of the processes that are going to be visualized with different diagrams: *
 * Adiabatic
 * Polytropic -->
 \
-<a href="https://github.com/TerraBoii/physics_app">
-    <img src="github_images/Isoprocess_eng.jpg" title="Iso processes">
-</a>
+[![Iso processes](github_images/Isoprocess_eng.jpg)](https://github.com/TerraBoii/physics_app "Iso processes")
 
 <p align="right">(<a href="#top" title="to the top of the page">back to top</a>)</p>
 
@@ -26,8 +26,6 @@ Some of the processes that are going to be visualized with different diagrams: *
 * Адиабатный
 * Поилитропный --> 
 \
-<a href="https://github.com/TerraBoii/physics_app">
-    <img src="github_images/Isoprocess_ru.jpg" title="Изопроцессы">
-</a>
+[![изопроцессы](github_images/Isoprocess_ru.jpg)](https://github.com/TerraBoii/physics_app "Изопроцессы")
 
 <p align="right">(<a href="#top" title="to the top of the page">back to top</a>)</p>
