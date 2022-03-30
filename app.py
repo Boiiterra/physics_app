@@ -318,8 +318,8 @@ class About(Toplevel):
         self.transient(parent)
         self.grab_set()
         x = (self.winfo_screenwidth() - 313) / 2
-        y = (self.winfo_screenheight() - 300) / 2
-        self.geometry('{0}x{1}+{2}+{3}'.format(313, 300, int(x), int(y)))
+        y = (self.winfo_screenheight() - 250) / 2
+        self.geometry('{0}x{1}+{2}+{3}'.format(313, 250, int(x), int(y)))
         self.resizable(0, 0)
         self.title('Physics app')
 
