@@ -139,3 +139,6 @@ launcher.aip
 
 # Kate
 *.kate*
+
+# VS Code
+.vscode/
