@@ -4,6 +4,8 @@ from configparser import ConfigParser
 from webbrowser import open_new_tab
 from PIL import Image, ImageTk
 from platform import system
+from pyperclip import copy 
+from random import randint
 
 
 __version__ = "0.1"
@@ -38,28 +40,55 @@ a_u = parser.get("info", "auto_update")
 
 class ToolTip(object):
 
-    def __init__(self, widget):
+    def __init__(self, widget, id):
         self.widget = widget
         self.tipwindow = None
         self.x = self.y = 0
+        self.id = id
 
     def showtip(self, text):
         self.text = text
         if self.tipwindow or not self.text:
             return
         mouse_x, mouse_y = mouse_pos()
-        if mouse_x <= 1700 and current_language == "eng":
+        if mouse_x <= 1700 and current_language == "eng" and self.id == 0:
             x = mouse_x + 14
             y = mouse_y + 1
-        elif mouse_x <= 1600 and current_language == "rus":
+        elif mouse_x <= 1600 and current_language == "rus" and self.id == 0:
             x = mouse_x + 14
             y = mouse_y + 1
-        elif mouse_x > 1700 and current_language == "eng":
+        elif mouse_x > 1700 and current_language == "eng" and self.id == 0:
             x = mouse_x - 148
             y = mouse_y + 1
-        elif mouse_x > 1600 and current_language == "rus":
+        elif mouse_x > 1600 and current_language == "rus" and self.id == 0:
             x = mouse_x - 214
             y = mouse_y + 1
+        elif mouse_x <= 1700 and 0 < self.id < 7:
+            x = mouse_x + 14
+            y = mouse_y + 1
+        elif mouse_x > 1700 and current_language == "rus" and self.id == 1:
+            x = mouse_x - 165
+            y = mouse_y + 1
+        elif mouse_x > 1700 and current_language == "rus" and self.id == 2:
+            x = mouse_x - 140
+            y = mouse_y + 1
+        elif mouse_x > 1700 and current_language == "rus" and self.id == 3:
+            x = mouse_x - 150
+            y = mouse_y + 1
+        elif mouse_x > 1700 and current_language == "rus" and  4 <= self.id <= 6:
+            x = mouse_x - 200
+            y = mouse_y + 1
+        elif mouse_x > 1700 and current_language == "eng" and (self.id == 1 or self.id == 4):
+            x = mouse_x - 145
+            y = mouse_y + 1
+        elif mouse_x > 1700 and current_language == "eng" and (self.id == 2 or self.id == 5):
+            x = mouse_x - 150
+            y = mouse_y + 1
+        elif mouse_x > 1700 and current_language == "eng" and (self.id == 3 or self.id == 6):
+            print("This shit works")
+            x = mouse_x - 110
+            y = mouse_y + 1
+        
         self.tipwindow = tw = Toplevel(self.widget)
         tw.wm_overrideredirect(1)
         tw.wm_geometry("+%d+%d" % (x, y))
@@ -73,6 +102,16 @@ class ToolTip(object):
         self.tipwindow = None
         if tw:
             tw.destroy()
+
+
+def CreateToolTip(widget, text, id):
+    toolTip = ToolTip(widget, id)
+    def enter(_):
+        toolTip.showtip(text)
+    def leave(_):
+        toolTip.hidetip()
+    widget.bind('<Enter>', enter)
+    widget.bind('<Leave>', leave)
 
 
 def set_theme():  # This function updates colors after theme changed
@@ -313,7 +352,7 @@ class MainAppBody(Tk):  # Main application with page logic
 
 class About(Toplevel):
     def __init__(self, parent):
-        Toplevel.__init__(self, parent)
+        Toplevel.__init__(self, parent, bg=bg)
 
         self.transient(parent)
         self.grab_set()
@@ -331,7 +370,7 @@ class About(Toplevel):
             toolTip.showtip(tip_txt)
 
         def left(_):
-            a_text.config(font=("TkDefaultFont", 12), cursor="", fg="black")
+            a_text.config(font=("TkDefaultFont", 12), cursor="", fg=fg)
             toolTip.hidetip()
 
         a_u_t = None 
@@ -342,38 +381,42 @@ class About(Toplevel):
             elif a_u == "True":
                 a_u_t = "on"
 
-            tip_txt = "Link to autor's profile"
             title_t = "Physics app"
             txt3 = f"Auto update - {a_u_t}"
-            txt4 = f"App's author - {author}"
+            txt5 = f"App's author - {author}"
+            tip_txt = "Link to autor's profile"
             txt1 = f"App version - {__version__}"
             txt2 = f"App's theme - {current_theme}"
+            txt4 = f"App's language - {current_language}"
         elif current_language == "rus":
             if a_u == "False":
                 a_u_t = "выкл"
             elif a_u == "True":
                 a_u_t = "вкл"
 
-            tip_txt = "Ссылка на профиль создателя"
-            txt2 = f"Темиа приложения - {current_theme}"
+            txt4 = f"Язык приложения - {current_language}"
+            txt2 = f"Тема приложения - {current_theme}"
             txt1 = f"Версия приложения - {__version__}"
-            txt4 = f"Автор приложения - {author}"
+            tip_txt = "Ссылка на профиль создателя"
+            txt5 = f"Автор приложения - {author}"
             txt3 = f"Авто обновление - {a_u_t}"
             title_t = "Physics app"
 
-        title = Label(self, text=title_t, font=("TkDefaultFont", 15), pady=5)
+        title = Label(self, text=title_t, font=("TkDefaultFont", 15), pady=5, bg=bg, fg=fg)
         title.pack()
 
-        Button(self, text='OK', font=15, command=self.destroy, pady=10, width=7).pack(side="bottom")
-        Label(self).pack()  # Placeholder
-        Label(self, width=3).pack(side="left", fill="y")  # Placeholder
+        Button(self, text='OK', font=15, command=self.destroy, pady=10, width=7, highlightbackground=bg, 
+               bg=num_bg, fg=fg, bd=0, activebackground=num_bg, activeforeground=active_fg).pack(side="bottom")
+        Label(self, font=("Times New Roman", 1), bg=bg).pack()  # Placeholder
+        Label(self, width=3, bg=bg).pack(side="left", fill="y")  # Placeholder
 
-        Label(self, text=txt1, font=("TkDefaultFont", 12), anchor="w").pack(fill="x")
-        Label(self, text=txt2, font=("TkDefaultFont", 12), anchor="w").pack(fill="x")
-        Label(self, text=txt3, font=("TkDefaultFont", 12), anchor="w").pack(fill="x")
-        a_text = Label(self, text=txt4, font=("TkDefaultFont", 12), anchor="w")
+        Label(self, text=txt1, font=("TkDefaultFont", 12), anchor="w", bg=bg, fg=fg).pack(fill="x")
+        Label(self, text=txt2, font=("TkDefaultFont", 12), anchor="w", bg=bg, fg=fg).pack(fill="x")
+        Label(self, text=txt3, font=("TkDefaultFont", 12), anchor="w", bg=bg, fg=fg).pack(fill="x")
+        Label(self, text=txt4, font=("TkDefaultFont", 12), anchor="w", bg=bg, fg=fg).pack(fill="x")
+        a_text = Label(self, text=txt5, font=("TkDefaultFont", 12), anchor="w", bg=bg, fg=fg)
         a_text.pack(fill="x")
-        toolTip = ToolTip(a_text)
+        toolTip = ToolTip(a_text, 0)
         a_text.bind("<Leave>", left)
         a_text.bind("<Enter>", entered)
         a_text.bind("<Button-1>", call_link)
@@ -390,7 +433,7 @@ class FLaunchPage(Frame):  # This page launches when you need to choose language
         question = Label(self, text=question_text, bg="black", fg="#00ff00", font=("Arial", 40))
         question.pack(side="top")
 
-        hint_text = "Note: you can always change\nlanguage in settings menu"
+        hint_text = "You can always change\nlanguage in settings menu"
 
         bottom_ = Label(self, bg="black", text=hint_text, font=("Arial", 30), fg="#008000")
         bottom_.pack(side="bottom")
@@ -415,7 +458,7 @@ class FLaunchPage(Frame):  # This page launches when you need to choose language
             _question_text = _hint_text = ''
             if lang == "eng":
                 _question_text = "\nChoose language:"
-                _hint_text = "Note: you can always change\nlanguage in settings menu"
+                _hint_text = "You can always change\nlanguage in settings menu"
             elif lang == "rus":
                 _question_text = "\nВыберите язык:"
                 _hint_text = "Язык можно\nизменить в настройках"
@@ -474,23 +517,125 @@ class MainPage(Frame):
         Frame.__init__(self, parent, bg=bg)
         self.controller = controller
 
-        self.experiment = Label(self, font=("Hetlevica", 15), bg=bg, fg=fg)
-        self.experiment.pack()
+        self.p_tip = ""
+        self.t_tip = ""
+        self.v_tip = ""
+        temp_pr = 1201001
+        volume_pr = 13000
+        presure_pr = randint(1, 10)
+        font_vi = ("TkDefaultFont", 13, "bold")
+
+        self.pr_data_i = Label(self, font=font_vi, bg=num_bg, fg=fg)
+        self.pr_data_i.pack(side="top", anchor="nw", pady=7, padx=45)
+
+        self.cont_pr = Label(self, bg=num_bg)
+        self.cont_pr.pack(side='left', anchor="nw", padx=30)
+        self.cont_pr.rowconfigure(0, weight=1)
+        self.cont_pr.rowconfigure(1, weight=1)
+        self.cont_pr.columnconfigure(0, weight=1)
+        self.cont_pr.columnconfigure(1, weight=1)
+        self.cont_pr.columnconfigure(2, weight=1)
+
+        self.new_data_i = Label(self, font=font_vi, bg=num_bg, fg=fg)
+        self.new_data_i.pack(side="top", anchor="ne", pady=7, padx=45)
+
+        self.cont_new = Label(self, bg=num_bg)
+        self.cont_new.pack(side='right', anchor="ne", padx=30)
+        self.cont_new.rowconfigure(0, weight=1)
+        self.cont_new.rowconfigure(1, weight=1)
+        self.cont_new.columnconfigure(0, weight=1)
+        self.cont_new.columnconfigure(1, weight=1)
+        self.cont_new.columnconfigure(2, weight=1)
+
+        if current_language == "eng":
+            self.p_tip = "Presure, Pascal"
+            self.t_tip = "Temperature, Kelvin"
+            self.v_tip = "Volume, cubic metre"
+        elif current_language == "rus":
+            self.t_tip = "Температура, Кельвин"
+            self.p_tip = "Давление, Паскалей"
+            self.v_tip = "Объём, кубометров"
+
+        def insert_prev_data():
+            self.tp_e.insert("end", temp_pr/1000)
+            self.vp_e.insert("end", volume_pr/1000)
+            self.pp_e.insert("end", presure_pr/1000)
+
+            self.tn_e.insert("end", temp_pr/1000)
+            self.vn_e.insert("end", volume_pr/1000)
+            self.pn_e.insert("end", presure_pr/1000)
+
+        # Info
+        self.tp_v = Label(self.cont_pr, text="T", bg=bg, fg=fg, font=font_vi)
+        self.tp_v.grid(row=0, column=0, sticky="nsew")
+        self.vp_v = Label(self.cont_pr, text="V", bg=bg, fg=fg, font=font_vi)
+        self.vp_v.grid(row=0, column=1, sticky="nsew")
+        self.pp_v = Label(self.cont_pr, text="P", bg=bg, fg=fg, font=font_vi)
+        self.pp_v.grid(row=0, column=2, sticky="nsew")
+
+        self.tn_v = Label(self.cont_new, text="T", bg=bg, fg=fg, font=font_vi)
+        self.tn_v.grid(row=0, column=0, sticky="nsew")
+        self.vn_v = Label(self.cont_new, text="V", bg=bg, fg=fg, font=font_vi)
+        self.vn_v.grid(row=0, column=1, sticky="nsew")
+        self.pn_v = Label(self.cont_new, text="P", bg=bg, fg=fg, font=font_vi)
+        self.pn_v.grid(row=0, column=2, sticky="nsew")
+
+        # Previous data
+        self.tp_e = Entry(self.cont_pr, width=8, font=font_vi, highlightbackground=num_bg, bg=num_bg, fg=fg, bd=0)
+        self.tp_e.grid(row=1, column=0, pady=2, padx=5)
+        self.vp_e = Entry(self.cont_pr, width=8, font=font_vi, highlightbackground=num_bg, bg=num_bg, fg=fg, bd=0)
+        self.vp_e.grid(row=1, column=1, pady=2, padx=5)
+        self.pp_e = Entry(self.cont_pr, width=8, font=font_vi, highlightbackground=num_bg, bg=num_bg, fg=fg, bd=0)
+        self.pp_e.grid(row=1, column=2, pady=2, padx=5)
+        # New data
+        self.tn_e = Entry(self.cont_new, width=8, font=font_vi, highlightbackground=num_bg, bg=num_bg, fg=fg, bd=0)
+        self.tn_e.grid(row=1, column=0, pady=2, padx=5)
+        self.vn_e = Entry(self.cont_new, width=8, font=font_vi, highlightbackground=num_bg, bg=num_bg, fg=fg, bd=0)
+        self.vn_e.grid(row=1, column=1, pady=2, padx=5)
+        self.pn_e = Entry(self.cont_new, width=8, font=font_vi, highlightbackground=num_bg, bg=num_bg, fg=fg, bd=0)
+        self.pn_e.grid(row=1, column=2, pady=2, padx=5)
+
+        insert_prev_data()
+
+        self.tp_e.bind("<Button-1>", lambda _: copy(temp_pr))
+        self.vp_e.bind("<Button-1>", lambda _: copy(volume_pr))
+        self.pp_e.bind("<Button-1>", lambda _: copy(presure_pr))
 
         self.set_main_lang()
 
 
     def set_main_lang(self):
         if current_language == "eng":
-            self.experiment.config(text="EXAMPLE")
+            hint = "Click to copy"
+            self.p_tip = "Presure, Pascal"
+            self.t_tip = "Temperature, Kelvin"
+            self.v_tip = "Volume, cubic metre"
+            self.pr_data_i.config(text="Previous data:")
         elif current_language == "rus":
-            self.experiment.config(text="ПРИМЕР_")
+            self.pr_data_i.config(text="Предыдущие данные:")
+            self.t_tip = "Температура, Кельвин"
+            self.p_tip = "Давление, Паскалей"
+            self.v_tip = "Объём, кубометров"
+            hint = "Нажми, чтобы скопировать"
+
+        CreateToolTip(self.tp_v, self.t_tip, 1)
+        CreateToolTip(self.vp_v, self.v_tip, 2)
+        CreateToolTip(self.pp_v, self.p_tip, 3)
+        CreateToolTip(self.tp_e, f"{self.t_tip}\n{hint}", 4)
+        CreateToolTip(self.vp_e, f"{self.v_tip}\n{hint}", 5)
+        CreateToolTip(self.pp_e, f"{self.p_tip}\n{hint}", 6)
 
 
     def mainpage_theme(self):
         self.config(bg=bg)
-        self.experiment.config(fg=fg, bg=bg)
-
+        self.cont_pr.config(bg=bg)
+        self.tp_v.config(bg=bg, fg=fg)
+        self.vp_v.config(bg=bg, fg=fg)
+        self.pp_v.config(bg=bg, fg=fg)
+        self.pr_data_i.config(bg=bg, fg=fg)
+        self.tp_e.config(bg=num_bg, fg=fg, highlightbackground=num_bg)
+        self.vp_e.config(bg=num_bg, fg=fg, highlightbackground=num_bg)
+        self.pp_e.config(bg=num_bg, fg=fg, highlightbackground=num_bg)
 
 
 class Settings(Frame):
