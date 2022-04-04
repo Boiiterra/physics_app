@@ -516,7 +516,17 @@ class MainPage(Frame):
     def __init__(self, parent, controller):
         Frame.__init__(self, parent, bg=bg)
         self.controller = controller
+        self.rowconfigure(0, weight=1)
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
 
+        self.left_part = Frame(self, bg=bg)
+        self.left_part.grid(row=0, column=0, sticky="nsew")
+
+        self.right_part = Frame(self, bg=bg)
+        self.right_part.grid(row=0, column=1, sticky="nsew")
+
+        self.hint = ""
         self.p_tip = ""
         self.t_tip = ""
         self.v_tip = ""
@@ -525,10 +535,10 @@ class MainPage(Frame):
         presure_pr = randint(1, 10)
         font_vi = ("TkDefaultFont", 13, "bold")
 
-        self.pr_data_i = Label(self, font=font_vi, bg=num_bg, fg=fg)
+        self.pr_data_i = Label(self.left_part, font=font_vi, bg=bg, fg=fg)
         self.pr_data_i.pack(side="top", anchor="nw", pady=7, padx=45)
 
-        self.cont_pr = Label(self, bg=num_bg)
+        self.cont_pr = Label(self.left_part, bg=bg)
         self.cont_pr.pack(side='left', anchor="nw", padx=30)
         self.cont_pr.rowconfigure(0, weight=1)
         self.cont_pr.rowconfigure(1, weight=1)
@@ -536,10 +546,10 @@ class MainPage(Frame):
         self.cont_pr.columnconfigure(1, weight=1)
         self.cont_pr.columnconfigure(2, weight=1)
 
-        self.new_data_i = Label(self, font=font_vi, bg=num_bg, fg=fg)
+        self.new_data_i = Label(self.right_part, font=font_vi, bg=bg, fg=fg)
         self.new_data_i.pack(side="top", anchor="ne", pady=7, padx=45)
 
-        self.cont_new = Label(self, bg=num_bg)
+        self.cont_new = Label(self.right_part, bg=bg)
         self.cont_new.pack(side='right', anchor="ne", padx=30)
         self.cont_new.rowconfigure(0, weight=1)
         self.cont_new.rowconfigure(1, weight=1)
@@ -547,23 +557,14 @@ class MainPage(Frame):
         self.cont_new.columnconfigure(1, weight=1)
         self.cont_new.columnconfigure(2, weight=1)
 
-        if current_language == "eng":
-            self.p_tip = "Presure, Pascal"
-            self.t_tip = "Temperature, Kelvin"
-            self.v_tip = "Volume, cubic metre"
-        elif current_language == "rus":
-            self.t_tip = "Температура, Кельвин"
-            self.p_tip = "Давление, Паскалей"
-            self.v_tip = "Объём, кубометров"
-
         def insert_prev_data():
             self.tp_e.insert("end", temp_pr/1000)
             self.vp_e.insert("end", volume_pr/1000)
             self.pp_e.insert("end", presure_pr/1000)
 
-            self.tn_e.insert("end", temp_pr/1000)
-            self.vn_e.insert("end", volume_pr/1000)
-            self.pn_e.insert("end", presure_pr/1000)
+            self.tn_e.insert("end", 0)
+            self.vn_e.insert("end", 0)
+            self.pn_e.insert("end", 0)
 
         # Info
         self.tp_v = Label(self.cont_pr, text="T", bg=bg, fg=fg, font=font_vi)
@@ -606,36 +607,55 @@ class MainPage(Frame):
 
     def set_main_lang(self):
         if current_language == "eng":
-            hint = "Click to copy"
+            self.hint = "Click to copy"
             self.p_tip = "Presure, Pascal"
             self.t_tip = "Temperature, Kelvin"
             self.v_tip = "Volume, cubic metre"
-            self.pr_data_i.config(text="Previous data:")
+            self.new_data_i.config(text="New data")
+            self.pr_data_i.config(text="Previous data")
         elif current_language == "rus":
-            self.pr_data_i.config(text="Предыдущие данные:")
+            self.pr_data_i.config(text="Предыдущие данные")
+            self.new_data_i.config(text="Новые данные")
+            self.hint = "Нажми, чтобы скопировать"
             self.t_tip = "Температура, Кельвин"
             self.p_tip = "Давление, Паскалей"
             self.v_tip = "Объём, кубометров"
-            hint = "Нажми, чтобы скопировать"
 
         CreateToolTip(self.tp_v, self.t_tip, 1)
         CreateToolTip(self.vp_v, self.v_tip, 2)
         CreateToolTip(self.pp_v, self.p_tip, 3)
-        CreateToolTip(self.tp_e, f"{self.t_tip}\n{hint}", 4)
-        CreateToolTip(self.vp_e, f"{self.v_tip}\n{hint}", 5)
-        CreateToolTip(self.pp_e, f"{self.p_tip}\n{hint}", 6)
+        CreateToolTip(self.tn_v, self.t_tip, 1)
+        CreateToolTip(self.vn_v, self.v_tip, 2)
+        CreateToolTip(self.pn_v, self.p_tip, 3)
+
+        CreateToolTip(self.tn_e, self.t_tip, 4)
+        CreateToolTip(self.vn_e, self.v_tip, 5)
+        CreateToolTip(self.pn_e, self.p_tip, 6)
+        CreateToolTip(self.tp_e, f"{self.t_tip}\n{self.hint}", 4)
+        CreateToolTip(self.vp_e, f"{self.v_tip}\n{self.hint}", 5)
+        CreateToolTip(self.pp_e, f"{self.p_tip}\n{self.hint}", 6)
 
 
     def mainpage_theme(self):
         self.config(bg=bg)
         self.cont_pr.config(bg=bg)
+        self.cont_new.config(bg=bg)
+        self.left_part.config(bg=bg)
+        self.right_part.config(bg=bg)
         self.tp_v.config(bg=bg, fg=fg)
         self.vp_v.config(bg=bg, fg=fg)
         self.pp_v.config(bg=bg, fg=fg)
+        self.tn_v.config(bg=bg, fg=fg)
+        self.vn_v.config(bg=bg, fg=fg)
+        self.pn_v.config(bg=bg, fg=fg)
         self.pr_data_i.config(bg=bg, fg=fg)
+        self.new_data_i.config(bg=bg, fg=fg)
         self.tp_e.config(bg=num_bg, fg=fg, highlightbackground=num_bg)
         self.vp_e.config(bg=num_bg, fg=fg, highlightbackground=num_bg)
         self.pp_e.config(bg=num_bg, fg=fg, highlightbackground=num_bg)
+        self.tn_e.config(bg=num_bg, fg=fg, highlightbackground=num_bg)
+        self.vn_e.config(bg=num_bg, fg=fg, highlightbackground=num_bg)
+        self.pn_e.config(bg=num_bg, fg=fg, highlightbackground=num_bg)
 
 
 class Settings(Frame):
@@ -664,7 +684,7 @@ class Settings(Frame):
                                        font=("Arial", 35), disabledforeground=num_bg, highlightbackground=num_bg,
                                        activeforeground=num_active_fg, activebackground=num_bg, bd=0,
                                        command=lambda: self.language_changer(_lang_="eng"))
-        self.english_lang_btn.grid(row=0, column=1)
+        self.english_lang_btn.grid(row=0, column=1, padx=5)
 
         self.russian_lang_btn = Button(self.language_changers_container, text="Русский", bg=bg, fg=fg,
                                        font=("Arial", 35), disabledforeground=bg, highlightbackground=bg,
@@ -689,19 +709,41 @@ class Settings(Frame):
         self.theme_info.grid(row=0, column=0, sticky="nsew")
 
         self.dark_theme_btn = Button(self.themes_changers_container, bg=num_bg, fg=num_fg,
-                                     font=("Arial", 40), command=self.change_theme_to_dark, bd=0, highlightbackground=num_bg,
+                                     font=("Arial", 35), command=self.change_theme_to_dark, bd=0, highlightbackground=num_bg,
                                      activeforeground=num_active_fg, activebackground=num_bg, disabledforeground=num_bg)
-        self.dark_theme_btn.grid(row=0, column=1, sticky='nsew')
+        self.dark_theme_btn.grid(row=0, column=1, sticky='nsew', padx=5)
 
         self.light_theme_btn = Button(self.themes_changers_container, bg=bg, fg=fg,
-                                      font=("Arial", 40), highlightbackground=bg,
+                                      font=("Arial", 35), highlightbackground=bg,
                                       activeforeground=active_fg, activebackground=bg, bd=0, disabledforeground=bg,
                                       command=self.change_theme_to_light)
         self.light_theme_btn.grid(row=0, column=3, sticky='nsew')
 
-        # Separator or placeholder
-        self.place_h2 = Label(self, bg=bg, font=('Arial', 20))
+        self.place_h2 = Label(self, bg=bg, font=('Arial', 30))
         self.place_h2.pack()
+
+        self.update_container = Label(self, bg=bg)
+        self.update_container.pack(anchor="n")
+
+        self.update_container.rowconfigure(0, weight=1)
+        self.update_container.columnconfigure(0, weight=1)
+        self.update_container.columnconfigure(1, weight=1)
+        self.update_container.columnconfigure(2, weight=1)
+
+        self.update_info = Label(self.update_container, bg=bg, fg=fg, font=("Arial", 35))
+        self.update_info.grid(row=0, column=0, sticky="nsew")
+
+        self.a_update_on = Radiobutton(self.update_container, text="On", bg=bg, fg=fg, highlightbackground=bg, 
+                                       indicatoron=0, font=("Arial", 35))
+        self.a_update_on.grid(row=0, column=1, sticky="nsew", padx=5)
+
+        self.a_update_off = Radiobutton(self.update_container, text="Off", bg=bg, fg=fg, highlightbackground=bg, 
+                                       indicatoron=0, font=("Arial", 35))
+        self.a_update_off.grid(row=0, column=2, sticky="nsew") 
+
+        # Separator or placeholder
+        self.place_h3 = Label(self, bg=bg, font=('Arial', 20))
+        self.place_h3.pack()
 
         self.home_button = Button(self, bg=num_bg, fg=home_btn_fg, font=("Arial", 45),
                                   activeforeground=home_btn_active_fg, activebackground=num_bg, bd=0,
@@ -709,13 +751,7 @@ class Settings(Frame):
                                   highlightbackground=num_bg)
         self.home_button.pack(fill='both', side='bottom', expand=True)
 
-        # Checking for current theme
-        if current_theme == 'dark':
-            self.dark_theme_btn.config(state='disabled', cursor="arrow")
-            self.light_theme_btn.config(state='normal', cursor="hand2")
-        elif current_theme == 'light':
-            self.dark_theme_btn.config(state='normal', cursor="hand2")
-            self.light_theme_btn.config(state='disabled', cursor="arrow")
+        # Checking for current theme"", cursor="arrow")
 
         self.bind("<Configure>", lambda params: self.font_changer(params.width))
 
@@ -749,6 +785,7 @@ class Settings(Frame):
         if current_language == "eng":
             self.russian_lang_btn.config(state='normal', cursor="hand2")
             self.english_lang_btn.config(state='disabled', cursor="")
+            self.update_info.config(text='Auto update:')
             self.language_info.config(text='Language:')
             self.light_theme_btn.config(text='Light')
             self.dark_theme_btn.config(text='Dark')
@@ -760,6 +797,7 @@ class Settings(Frame):
             self.language_info.config(text='Язык:')
             self.dark_theme_btn.config(text='Тёмная')
             self.light_theme_btn.config(text='Светлая')
+            self.update_info.config(text="Авто обновление:")
             self.russian_lang_btn.config(state='disabled', cursor="")
             self.english_lang_btn.config(state='normal', cursor="hand2")
         self.font_changer(self.winfo_width())
@@ -769,6 +807,8 @@ class Settings(Frame):
         self.place_h0.config(bg=bg)
         self.place_h1.config(bg=bg)
         self.place_h2.config(bg=bg)
+        self.place_h3.config(bg=bg)
+        self.update_container.config(bg=bg)
         self.theme_info.config(bg=bg, fg=fg)
         self.themes_changers_container.config(bg=bg)
         self.language_changers_container.config(bg=bg)
@@ -790,14 +830,14 @@ class Settings(Frame):
         page.mainpage_theme()
 
     def change_theme_to_dark(self):
-        self.dark_theme_btn.config(state='disabled', cursor="")
         self.light_theme_btn.config(state='normal', cursor="hand2")
+        self.dark_theme_btn.config(state='disabled', cursor="")
         dark_theme()
         self.pages_update()
 
     def change_theme_to_light(self):
-        self.light_theme_btn.config(state='disabled', cursor="")
         self.dark_theme_btn.config(state='normal', cursor="hand2")
+        self.light_theme_btn.config(state='disabled', cursor="")
         light_theme()
         self.pages_update()
 
