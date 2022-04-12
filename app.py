@@ -315,6 +315,8 @@ class MainAppBody(Tk):  # Main application with page logic
         container.grid_rowconfigure(0, weight=1)
         container.columnconfigure(0, weight=1)
 
+        self.bind("<Control q>", lambda _: self.quit())
+
         self.frames = {}
 
         frame_collection = (FLaunchPage, MainPage, Settings)
