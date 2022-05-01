@@ -812,6 +812,13 @@ class Settings(Frame):
             self.light_theme_btn.config(state="normal")
             self.dark_theme_btn.config(state="disabled")
 
+        if a_u == "True":
+            self.a_update_on.config(state="disabled")
+            self.a_update_off.config(state="normal")
+        elif a_u == "False":
+            self.a_update_on.config(state="normal")
+            self.a_update_off.config(state="disabled")
+
         self.set_lang_settings()
 
     def font_changer(self, width):
@@ -871,13 +878,18 @@ class Settings(Frame):
         self.place_h3.config(bg=bg)
         self.update_container.config(bg=bg)
         self.theme_info.config(bg=bg, fg=fg)
+        self.update_info.config(bg=bg, fg=fg)
         self.themes_changers_container.config(bg=bg)
         self.language_changers_container.config(bg=bg)
         self.language_info.config(bg=bg, disabledforeground=fg, highlightbackground=bg)
+        self.a_update_off.config(bg=bg, fg=fg, highlightbackground=bg, activebackground=bg, activeforeground=active_fg,
+                                 disabledforeground=bg)
         self.light_theme_btn.config(bg=bg, fg=fg, activeforeground=active_fg, activebackground=bg, disabledforeground=bg,
                                     highlightbackground=bg)
         self.russian_lang_btn.config(bg=bg, fg=fg, disabledforeground=bg, activeforeground=active_fg, activebackground=bg,
                                      highlightbackground=bg)
+        self.a_update_on.config(bg=num_bg, fg=fg, highlightbackground=num_bg, activebackground=num_bg,
+                                activeforeground=active_fg, disabledforeground=num_bg)
         self.dark_theme_btn.config(bg=num_bg, fg=num_fg, activeforeground=num_active_fg, activebackground=num_bg,
                                    disabledforeground=num_bg, highlightbackground=num_bg)
         self.english_lang_btn.config(bg=num_bg, fg=num_fg, disabledforeground=num_bg, activeforeground=num_active_fg,
