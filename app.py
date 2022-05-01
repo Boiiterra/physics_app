@@ -1,4 +1,4 @@
-from tkinter import Tk, Frame, Radiobutton, Button, Text, Label, Entry, Toplevel, Menu, TclError
+from tkinter import Tk, Frame, Button, Text, Label, Entry, Toplevel, Menu, TclError
 from pyautogui import position as mouse_pos
 from configparser import ConfigParser
 from webbrowser import open_new_tab
@@ -126,6 +126,21 @@ def set_theme():  # This function updates colors after theme changed
     num_fg = parser.get("colors", "num_btn_fore")
     fg = parser.get("colors", "foreground")
     bg = parser.get("colors", "background")
+
+
+def a_status_set(state):
+    global a_u, parser
+
+    parser.read("data.txt")
+
+    if state == 1:
+        parser.set("info", "auto_update", "True")
+    elif state == 0:
+        parser.set("info", "auto_update", "False")
+    
+    with open("data.txt", "w") as configfile:
+        parser.write(configfile)
+    parser.get("info", "auto_update")
 
 
 def change_language(language: str):  # This function changes language for whole application
@@ -532,9 +547,23 @@ class MainPage(Frame):
         self.p_tip = ""
         self.t_tip = ""
         self.v_tip = ""
-        temp_pr = 1201001
-        volume_pr = 13000
-        presure_pr = randint(1, 10)
+        temp_pr = 0
+        big_small = randint(0, 10)
+        if big_small >= 9:
+            temp_pr = randint(50, 1000)
+        elif 9 > big_small >= 7:
+            temp_pr = randint(50, 800)
+        elif 7 > big_small >= 5:
+            temp_pr = randint(50, 500)
+        elif big_small < 5:
+            temp_pr = randint(50, 300)
+        extra_temp = randint(0, 8)
+        temp_pr = (temp_pr * 1000) + ((1000 // 8) * extra_temp)
+        volume_pr = randint(1, 1000) * 1000
+        presure_pr = randint(0, 4)
+        if presure_pr == 0:
+            presure_pr = 1
+        presure_pr *= 980665 
         font_vi = ("TkDefaultFont", 13, "bold")
 
         self.pr_data_i = Label(self.left_part, font=font_vi, bg=bg, fg=fg)
@@ -555,18 +584,27 @@ class MainPage(Frame):
         self.cont_new.pack(side='right', anchor="ne", padx=30)
         self.cont_new.rowconfigure(0, weight=1)
         self.cont_new.rowconfigure(1, weight=1)
+        self.cont_new.rowconfigure(2, weight=1)
         self.cont_new.columnconfigure(0, weight=1)
         self.cont_new.columnconfigure(1, weight=1)
         self.cont_new.columnconfigure(2, weight=1)
 
         def insert_prev_data():
+            self.tp_e.config(state="normal")
+            self.vp_e.config(state="normal")
+            self.pp_e.config(state="normal")
+
             self.tp_e.insert("end", temp_pr/1000)
             self.vp_e.insert("end", volume_pr/1000)
-            self.pp_e.insert("end", presure_pr/1000)
+            self.pp_e.insert("end", presure_pr/10)
 
             self.tn_e.insert("end", 0)
             self.vn_e.insert("end", 0)
             self.pn_e.insert("end", 0)
+
+            self.tp_e.config(state="disabled")
+            self.vp_e.config(state="disabled")
+            self.pp_e.config(state="disabled")
 
         # Info
         self.tp_v = Label(self.cont_pr, text="T", bg=bg, fg=fg, font=font_vi)
@@ -584,18 +622,21 @@ class MainPage(Frame):
         self.pn_v.grid(row=0, column=2, sticky="nsew")
 
         # Previous data
-        self.tp_e = Entry(self.cont_pr, width=8, font=font_vi, highlightbackground=num_bg, bg=num_bg, fg=fg, bd=0)
+        self.tp_e = Entry(self.cont_pr, width=10, font=font_vi, disabledbackground=num_bg, disabledforeground=fg,
+                          bd=0, justify="center", highlightthickness=0)
         self.tp_e.grid(row=1, column=0, pady=2, padx=5)
-        self.vp_e = Entry(self.cont_pr, width=8, font=font_vi, highlightbackground=num_bg, bg=num_bg, fg=fg, bd=0)
+        self.vp_e = Entry(self.cont_pr, width=10, font=font_vi, disabledbackground=num_bg, disabledforeground=fg,
+                          bd=0, justify="center", highlightthickness=0)
         self.vp_e.grid(row=1, column=1, pady=2, padx=5)
-        self.pp_e = Entry(self.cont_pr, width=8, font=font_vi, highlightbackground=num_bg, bg=num_bg, fg=fg, bd=0)
+        self.pp_e = Entry(self.cont_pr, width=10, font=font_vi, disabledbackground=num_bg, disabledforeground=fg,
+                          bd=0, justify="center", highlightthickness=0)
         self.pp_e.grid(row=1, column=2, pady=2, padx=5)
         # New data
-        self.tn_e = Entry(self.cont_new, width=8, font=font_vi, highlightbackground=num_bg, bg=num_bg, fg=fg, bd=0)
+        self.tn_e = Entry(self.cont_new, width=10, font=font_vi, highlightbackground=num_bg, bg=num_bg, fg=fg, bd=0, justify="center")
         self.tn_e.grid(row=1, column=0, pady=2, padx=5)
-        self.vn_e = Entry(self.cont_new, width=8, font=font_vi, highlightbackground=num_bg, bg=num_bg, fg=fg, bd=0)
+        self.vn_e = Entry(self.cont_new, width=10, font=font_vi, highlightbackground=num_bg, bg=num_bg, fg=fg, bd=0, justify="center")
         self.vn_e.grid(row=1, column=1, pady=2, padx=5)
-        self.pn_e = Entry(self.cont_new, width=8, font=font_vi, highlightbackground=num_bg, bg=num_bg, fg=fg, bd=0)
+        self.pn_e = Entry(self.cont_new, width=10, font=font_vi, highlightbackground=num_bg, bg=num_bg, fg=fg, bd=0, justify="center")
         self.pn_e.grid(row=1, column=2, pady=2, padx=5)
 
         insert_prev_data()
@@ -652,12 +693,12 @@ class MainPage(Frame):
         self.pn_v.config(bg=bg, fg=fg)
         self.pr_data_i.config(bg=bg, fg=fg)
         self.new_data_i.config(bg=bg, fg=fg)
-        self.tp_e.config(bg=num_bg, fg=fg, highlightbackground=num_bg)
-        self.vp_e.config(bg=num_bg, fg=fg, highlightbackground=num_bg)
-        self.pp_e.config(bg=num_bg, fg=fg, highlightbackground=num_bg)
         self.tn_e.config(bg=num_bg, fg=fg, highlightbackground=num_bg)
         self.vn_e.config(bg=num_bg, fg=fg, highlightbackground=num_bg)
         self.pn_e.config(bg=num_bg, fg=fg, highlightbackground=num_bg)
+        self.tp_e.config(disabledbackground=num_bg, disabledforeground=fg)
+        self.vp_e.config(disabledbackground=num_bg, disabledforeground=fg)
+        self.pp_e.config(disabledbackground=num_bg, disabledforeground=fg)
 
 
 class Settings(Frame):
@@ -735,13 +776,20 @@ class Settings(Frame):
         self.update_info = Label(self.update_container, bg=bg, fg=fg, font=("Arial", 35))
         self.update_info.grid(row=0, column=0, sticky="nsew")
 
-        self.a_update_on = Radiobutton(self.update_container, text="On", bg=bg, fg=fg, highlightbackground=bg, 
-                                       indicatoron=0, font=("Arial", 35))
+        self.a_update_on = Button(self.update_container, text="On", bg=num_bg, fg=fg, highlightbackground=num_bg, bd=0,
+                                  font=("Arial", 35), command=lambda: a_status_set(1), activebackground=num_bg, activeforeground=active_fg,
+                                  disabledforeground=num_bg)
         self.a_update_on.grid(row=0, column=1, sticky="nsew", padx=5)
 
-        self.a_update_off = Radiobutton(self.update_container, text="Off", bg=bg, fg=fg, highlightbackground=bg, 
-                                       indicatoron=0, font=("Arial", 35))
+        self.a_update_off = Button(self.update_container, text="Off", bg=bg, fg=fg, highlightbackground=bg, bd=0,
+                                   font=("Arial", 35), command=lambda: a_status_set(0), activebackground=bg, activeforeground=active_fg,
+                                   disabledforeground=bg)
         self.a_update_off.grid(row=0, column=2, sticky="nsew") 
+
+        if a_u == "True":
+            self.a_update_on.config(state="disabled")
+        elif a_u == "False":
+            self.a_update_off.config(state="disabled")
 
         # Separator or placeholder
         self.place_h3 = Label(self, bg=bg, font=('Arial', 20))
@@ -756,6 +804,13 @@ class Settings(Frame):
         # Checking for current theme"", cursor="arrow")
 
         self.bind("<Configure>", lambda params: self.font_changer(params.width))
+
+        if current_theme == "light":
+            self.light_theme_btn.config(state="disabled")
+            self.dark_theme_btn.config(state="normal")
+        elif current_theme == "dark":
+            self.light_theme_btn.config(state="normal")
+            self.dark_theme_btn.config(state="disabled")
 
         self.set_lang_settings()
 
@@ -793,9 +848,13 @@ class Settings(Frame):
             self.dark_theme_btn.config(text='Dark')
             self.theme_info.config(text='Theme:')
             self.home_button.config(text='Home')
+            self.a_update_off.config(text="Off")
+            self.a_update_on.config(text="On")
         elif current_language == 'rus':
+            self.a_update_on.config(text="Вкл")
             self.theme_info.config(text='Тема:')
             self.home_button.config(text='Назад')
+            self.a_update_off.config(text="Выкл")
             self.language_info.config(text='Язык:')
             self.dark_theme_btn.config(text='Тёмная')
             self.light_theme_btn.config(text='Светлая')
