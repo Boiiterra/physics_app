@@ -785,8 +785,8 @@ class Settings(Frame):
         self.update_info = Label(self.update_container, bg=bg, fg=fg, font=("Arial", 35))
         self.update_info.grid(row=0, column=0, sticky="nsew")
 
-        self.a_update_on = Button(self.update_container, text="On", bg=num_bg, fg=fg, highlightbackground=num_bg, bd=0,
-                                  font=("Arial", 35), command=lambda: a_u_state(1, 0), activebackground=num_bg, activeforeground=active_fg,
+        self.a_update_on = Button(self.update_container, text="On", bg=num_bg, fg=num_fg, highlightbackground=num_bg, bd=0,
+                                  font=("Arial", 35), command=lambda: a_u_state(1, 0), activebackground=num_bg, activeforeground=num_active_fg,
                                   disabledforeground=num_bg)
         self.a_update_on.grid(row=0, column=1, sticky="nsew", padx=5)
 
@@ -897,8 +897,8 @@ class Settings(Frame):
                                     highlightbackground=bg)
         self.russian_lang_btn.config(bg=bg, fg=fg, disabledforeground=bg, activeforeground=active_fg, activebackground=bg,
                                      highlightbackground=bg)
-        self.a_update_on.config(bg=num_bg, fg=fg, highlightbackground=num_bg, activebackground=num_bg,
-                                activeforeground=active_fg, disabledforeground=num_bg)
+        self.a_update_on.config(bg=num_bg, fg=num_fg, highlightbackground=num_bg, activebackground=num_bg,
+                                activeforeground=num_active_fg, disabledforeground=num_bg)
         self.dark_theme_btn.config(bg=num_bg, fg=num_fg, activeforeground=num_active_fg, activebackground=num_bg,
                                    disabledforeground=num_bg, highlightbackground=num_bg)
         self.english_lang_btn.config(bg=num_bg, fg=num_fg, disabledforeground=num_bg, activeforeground=num_active_fg,
