@@ -128,7 +128,7 @@ def set_theme():  # This function updates colors after theme changed
     bg = parser.get("colors", "background")
 
 
-def a_status_set(state):
+def a_u_state_set(state):
     global a_u, parser
 
     parser.read("data.txt")
@@ -773,16 +773,25 @@ class Settings(Frame):
         self.update_container.columnconfigure(1, weight=1)
         self.update_container.columnconfigure(2, weight=1)
 
+        def a_u_state(new_state, button):
+            a_u_state_set(new_state)
+            if button == 0:
+                self.a_update_on.config(state="disabled", cursor="")
+                self.a_update_off.config(state="normal", cursor="hand2")
+            elif button == 1:
+                self.a_update_on.config(state="normal", cursor="hand2")
+                self.a_update_off.config(state="disabled", cursor="")
+
         self.update_info = Label(self.update_container, bg=bg, fg=fg, font=("Arial", 35))
         self.update_info.grid(row=0, column=0, sticky="nsew")
 
         self.a_update_on = Button(self.update_container, text="On", bg=num_bg, fg=fg, highlightbackground=num_bg, bd=0,
-                                  font=("Arial", 35), command=lambda: a_status_set(1), activebackground=num_bg, activeforeground=active_fg,
+                                  font=("Arial", 35), command=lambda: a_u_state(1, 0), activebackground=num_bg, activeforeground=active_fg,
                                   disabledforeground=num_bg)
         self.a_update_on.grid(row=0, column=1, sticky="nsew", padx=5)
 
         self.a_update_off = Button(self.update_container, text="Off", bg=bg, fg=fg, highlightbackground=bg, bd=0,
-                                   font=("Arial", 35), command=lambda: a_status_set(0), activebackground=bg, activeforeground=active_fg,
+                                   font=("Arial", 35), command=lambda: a_u_state(0, 1), activebackground=bg, activeforeground=active_fg,
                                    disabledforeground=bg)
         self.a_update_off.grid(row=0, column=2, sticky="nsew") 
 
@@ -806,18 +815,18 @@ class Settings(Frame):
         self.bind("<Configure>", lambda params: self.font_changer(params.width))
 
         if current_theme == "light":
-            self.light_theme_btn.config(state="disabled")
-            self.dark_theme_btn.config(state="normal")
+            self.light_theme_btn.config(state="disabled", cursor="")
+            self.dark_theme_btn.config(state="normal", cursor="hand2")
         elif current_theme == "dark":
-            self.light_theme_btn.config(state="normal")
-            self.dark_theme_btn.config(state="disabled")
+            self.light_theme_btn.config(state="normal", cursor="hand2")
+            self.dark_theme_btn.config(state="disabled", cursor="")
 
         if a_u == "True":
-            self.a_update_on.config(state="disabled")
-            self.a_update_off.config(state="normal")
+            self.a_update_on.config(state="disabled", cursor="")
+            self.a_update_off.config(state="normal", cursor="hand2")
         elif a_u == "False":
-            self.a_update_on.config(state="normal")
-            self.a_update_off.config(state="disabled")
+            self.a_update_on.config(state="normal", cursor="hand2")
+            self.a_update_off.config(state="disabled", cursor="")
 
         self.set_lang_settings()
 
