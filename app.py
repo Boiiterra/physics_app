@@ -1,5 +1,6 @@
 from tkinter import Tk, Frame, Button, Text, Label, Entry, Toplevel, Menu, TclError
 from pyautogui import position as mouse_pos
+from tkinter.messagebox import showinfo
 from configparser import ConfigParser
 from webbrowser import open_new_tab
 from PIL import Image, ImageTk
@@ -300,6 +301,14 @@ class MainAppBody(Tk):  # Main application with page logic
             Button(but_cont, text='Yes', command=lambda: run(True), width=7).grid(row=0, column=0, padx=10)
             Button(but_cont, text="No", command=run, width=7).grid(row=0, column=1, padx=10)
 
+        def reset():
+            if current_language == "eng":
+                message = "Graph's data is reseted:\n- Pressure -> <None>.\n- Volume -> <None>.\n- Temperature -> <None>.\n- Gas -> <None>."
+            elif current_language == "rus":
+                message = "Данные графика были сброшены:\n- Давление -> <None>.\n- Объем -> <None>.\n- Температура -> <None>.\n- Газ -> <None>."
+            showinfo("Graph reset", message)
+            self.get_page(MainPage).data_reset()
+
         def settings():
             self.show_frame(Settings)
 
@@ -309,7 +318,7 @@ class MainAppBody(Tk):  # Main application with page logic
         file_menu.add_command(label="Open", command=donothing)
         file_menu.add_command(label="Save", command=donothing)
         file_menu.add_command(label="Save as...", command=donothing)
-        file_menu.add_command(label="Close", command=donothing)
+        file_menu.add_command(label="Reset", command=reset)
         file_menu.add_separator()
         file_menu.add_command(label="Exit", command=self.quit)
         self.menubar.add_cascade(label="File", menu=file_menu)
@@ -547,9 +556,9 @@ class MainPage(Frame):
         self.p_tip = ""
         self.t_tip = ""
         self.v_tip = ""
-        temp_pr = "None"
-        volume_pr = "None"
-        presure_pr = "None"
+        self.temp_pr = "None"
+        self.volume_pr = "None"
+        self.pressure_pr = "None"
         font_vi = ("TkDefaultFont", 13, "bold")
 
         self.pr_data_i = Label(self.left_part, font=font_vi, bg=bg, fg=fg)
@@ -610,29 +619,42 @@ class MainPage(Frame):
 
         self.insert_prev_data()
 
-        self.tp_e.bind("<Button-1>", lambda _: copy(temp_pr) if temp_pr != "None" else ...)
-        self.vp_e.bind("<Button-1>", lambda _: copy(volume_pr) if volume_pr != "None" else ...)
-        self.pp_e.bind("<Button-1>", lambda _: copy(presure_pr) if presure_pr != "None" else ...)
+        self.tp_e.bind("<Button-1>", lambda _: copy(self.temp_pr) if self.temp_pr != "None" else ...)
+        self.vp_e.bind("<Button-1>", lambda _: copy(self.volume_pr) if self.volume_pr != "None" else ...)
+        self.pp_e.bind("<Button-1>", lambda _: copy(self.pressure_pr) if self.pressure_pr != "None" else ...)
 
         self.set_main_lang()
 
 
-    def insert_prev_data(self):
+    def insert_prev_data(self, clear=False):
         self.tp_e.config(state="normal")
         self.vp_e.config(state="normal")
         self.pp_e.config(state="normal")
 
+        if clear: 
+            self.tp_e.delete(0, "end")
+            self.vp_e.delete(0, "end")
+            self.pp_e.delete(0, "end")
+
         self.tp_e.insert("end", self.temp_pr)
         self.vp_e.insert("end", self.volume_pr)
-        self.pp_e.insert("end", self.presure_pr)
+        self.pp_e.insert("end", self.pressure_pr)
 
-        self.tn_e.insert("end", 0)
-        self.vn_e.insert("end", 0)
-        self.pn_e.insert("end", 0)
+        if not clear:
+            self.tn_e.insert("end", 0)
+            self.vn_e.insert("end", 0)
+            self.pn_e.insert("end", 0)
 
         self.tp_e.config(state="disabled")
         self.vp_e.config(state="disabled")
         self.pp_e.config(state="disabled")
+
+
+    def data_reset(self):
+        self.temp_pr = "None"
+        self.volume_pr = "None"
+        self.pressure_pr = "None"
+        self.insert_prev_data(True)
 
 
     def set_main_lang(self):
