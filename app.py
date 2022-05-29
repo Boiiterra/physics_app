@@ -137,7 +137,7 @@ def a_u_state_set(state):
         parser.set("info", "auto_update", "True")
     elif state == 0:
         parser.set("info", "auto_update", "False")
-    
+
     with open("data.txt", "w") as configfile:
         parser.write(configfile)
     parser.get("info", "auto_update")
@@ -547,23 +547,9 @@ class MainPage(Frame):
         self.p_tip = ""
         self.t_tip = ""
         self.v_tip = ""
-        temp_pr = 0
-        big_small = randint(0, 10)
-        if big_small >= 9:
-            temp_pr = randint(50, 1000)
-        elif 9 > big_small >= 7:
-            temp_pr = randint(50, 800)
-        elif 7 > big_small >= 5:
-            temp_pr = randint(50, 500)
-        elif big_small < 5:
-            temp_pr = randint(50, 300)
-        extra_temp = randint(0, 8)
-        temp_pr = (temp_pr * 1000) + ((1000 // 8) * extra_temp)
-        volume_pr = randint(1, 1000) * 1000
-        presure_pr = randint(0, 4)
-        if presure_pr == 0:
-            presure_pr = 1
-        presure_pr *= 980665 
+        temp_pr = "None"
+        volume_pr = "None"
+        presure_pr = "None"
         font_vi = ("TkDefaultFont", 13, "bold")
 
         self.pr_data_i = Label(self.left_part, font=font_vi, bg=bg, fg=fg)
@@ -594,9 +580,9 @@ class MainPage(Frame):
             self.vp_e.config(state="normal")
             self.pp_e.config(state="normal")
 
-            self.tp_e.insert("end", temp_pr/1000)
-            self.vp_e.insert("end", volume_pr/1000)
-            self.pp_e.insert("end", presure_pr/10)
+            self.tp_e.insert("end", temp_pr)
+            self.vp_e.insert("end", volume_pr)
+            self.pp_e.insert("end", presure_pr)
 
             self.tn_e.insert("end", 0)
             self.vn_e.insert("end", 0)
@@ -641,9 +627,9 @@ class MainPage(Frame):
 
         insert_prev_data()
 
-        self.tp_e.bind("<Button-1>", lambda _: copy(temp_pr))
-        self.vp_e.bind("<Button-1>", lambda _: copy(volume_pr))
-        self.pp_e.bind("<Button-1>", lambda _: copy(presure_pr))
+        self.tp_e.bind("<Button-1>", lambda _: copy(temp_pr) if temp_pr != "None" else ...)
+        self.vp_e.bind("<Button-1>", lambda _: copy(volume_pr) if volume_pr != "None" else ...)
+        self.pp_e.bind("<Button-1>", lambda _: copy(presure_pr) if presure_pr != "None" else ...)
 
         self.set_main_lang()
 
