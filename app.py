@@ -575,23 +575,6 @@ class MainPage(Frame):
         self.cont_new.columnconfigure(1, weight=1)
         self.cont_new.columnconfigure(2, weight=1)
 
-        def insert_prev_data():
-            self.tp_e.config(state="normal")
-            self.vp_e.config(state="normal")
-            self.pp_e.config(state="normal")
-
-            self.tp_e.insert("end", temp_pr)
-            self.vp_e.insert("end", volume_pr)
-            self.pp_e.insert("end", presure_pr)
-
-            self.tn_e.insert("end", 0)
-            self.vn_e.insert("end", 0)
-            self.pn_e.insert("end", 0)
-
-            self.tp_e.config(state="disabled")
-            self.vp_e.config(state="disabled")
-            self.pp_e.config(state="disabled")
-
         # Info
         self.tp_v = Label(self.cont_pr, text="T", bg=bg, fg=fg, font=font_vi)
         self.tp_v.grid(row=0, column=0, sticky="nsew")
@@ -625,13 +608,31 @@ class MainPage(Frame):
         self.pn_e = Entry(self.cont_new, width=10, font=font_vi, highlightbackground=num_bg, bg=num_bg, fg=fg, bd=0, justify="center")
         self.pn_e.grid(row=1, column=2, pady=2, padx=5)
 
-        insert_prev_data()
+        self.insert_prev_data()
 
         self.tp_e.bind("<Button-1>", lambda _: copy(temp_pr) if temp_pr != "None" else ...)
         self.vp_e.bind("<Button-1>", lambda _: copy(volume_pr) if volume_pr != "None" else ...)
         self.pp_e.bind("<Button-1>", lambda _: copy(presure_pr) if presure_pr != "None" else ...)
 
         self.set_main_lang()
+
+
+    def insert_prev_data(self):
+        self.tp_e.config(state="normal")
+        self.vp_e.config(state="normal")
+        self.pp_e.config(state="normal")
+
+        self.tp_e.insert("end", self.temp_pr)
+        self.vp_e.insert("end", self.volume_pr)
+        self.pp_e.insert("end", self.presure_pr)
+
+        self.tn_e.insert("end", 0)
+        self.vn_e.insert("end", 0)
+        self.pn_e.insert("end", 0)
+
+        self.tp_e.config(state="disabled")
+        self.vp_e.config(state="disabled")
+        self.pp_e.config(state="disabled")
 
 
     def set_main_lang(self):
