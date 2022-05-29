@@ -258,7 +258,7 @@ class MainAppBody(Tk):  # Main application with page logic
         def about():
             About(self)
 
-        def reset():
+        def full_reset():
 
             warning_box = Toplevel()
             warning_box.transient(self)
@@ -314,7 +314,7 @@ class MainAppBody(Tk):  # Main application with page logic
         filemenu.add_command(label="Exit", command=self.quit)
         self.menubar.add_cascade(label="File", menu=filemenu)
         editmenu = Menu(self.menubar, tearoff=0)
-        editmenu.add_command(label="Reset app", command=reset)
+        editmenu.add_command(label="Reset app", command=full_reset)
         editmenu.add_separator()
         editmenu.add_command(label="Settings", command=settings)
         self.menubar.add_cascade(label="Edit", menu=editmenu)
