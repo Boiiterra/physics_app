@@ -1,5 +1,6 @@
 from matplotlib.backends.backend_tkagg import NavigationToolbar2Tk
 
+
 class NavigationToolbar(NavigationToolbar2Tk):
     """Display necessary buttons:\n
     Home, Back, Forward, Pan and Zoom"""
