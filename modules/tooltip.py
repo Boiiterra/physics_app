@@ -14,6 +14,9 @@ class ToolTip:
         self.text = text
         if self.tipwindow or not self.text:
             return
+
+        self.tipwindow = tw = Toplevel(self.widget)
+
         mouse_x, mouse_y = mouse_pos()
         if mouse_x <= 1700 and self.lang == "eng" and self.id == 0:
             x = mouse_x + 14
@@ -42,7 +45,6 @@ class ToolTip:
 
         y = mouse_y + 1
 
-        self.tipwindow = tw = Toplevel(self.widget)
         tw.wm_overrideredirect(1)
         tw.wm_geometry("+%d+%d" % (x, y))
         label = Label(
