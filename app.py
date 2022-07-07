@@ -933,5 +933,4 @@ class Settings(Frame):
 
 
 if __name__ == "__main__":
-    app = MainAppBody()
-    app.mainloop()
+    MainAppBody().mainloop()
