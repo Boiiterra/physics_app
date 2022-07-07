@@ -1,6 +1,10 @@
 ___
-+ [Description in english language](#physics-app)
-+ [Описание на русском языке](#приложение-по-физике)
+- [Physics app](#physics-app)
+- [Приложение по физике](#приложение-по-физике)
+___
+
+Code style: Black default
+Requirement: Python 3.10 and/or above
 ___
 
 # Physics app
