@@ -86,7 +86,6 @@ class ToolTip(object):
             x = mouse_x - 150
             y = mouse_y + 1
         elif mouse_x > 1700 and current_language == "eng" and (self.id == 3 or self.id == 6):
-            print("This shit works")
             x = mouse_x - 110
             y = mouse_y + 1
         
