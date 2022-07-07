@@ -1,6 +1,8 @@
 from matplotlib import rcParams
 
-def set_mpl_params():
+
+def config_mpl():
+    """Manipulate rcParams for matplotlib plots"""
     # Remove unnecessary params
     rcParams["keymap.copy"] = []
     rcParams["keymap.help"] = []
