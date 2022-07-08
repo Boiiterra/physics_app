@@ -3,7 +3,7 @@ from decimal import Decimal
 
 
 class SpecialKeyError(Exception):
-    """Custom exception"""
+    """Custom exception for convert function"""
 
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
