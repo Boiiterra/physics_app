@@ -84,4 +84,6 @@ def convert(number: Decimal, to: str, _from: str) -> Decimal:
         case "k", _:
             raise SpecialKeyError(f'Wrong key is entered: "_from" -> "{_from}"')
         case _:
-            raise SpecialKeyError(f'All entered keys are wrong: "to" -> "{to}", "_from" -> "{_from}"')
+            raise SpecialKeyError(
+                f'All entered keys are wrong: "to" -> "{to}", "_from" -> "{_from}"'
+            )
