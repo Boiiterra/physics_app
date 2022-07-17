@@ -1,7 +1,7 @@
 from matplotlib import rcParams
 
 
-def config_mpl():
+def config_mpl(figure_color, axes_color):
     """Manipulate rcParams for matplotlib plots"""
     # Remove unnecessary params
     rcParams["keymap.copy"] = []
@@ -15,8 +15,8 @@ def config_mpl():
     rcParams["keymap.forward"].remove("v")
     rcParams["keymap.back"].remove("backspace")
     # Change params
-    rcParams["keymap.forward"].append("ctrl+y")
     rcParams["keymap.back"].append("ctrl+z")
-    rcParams["figure.edgecolor"] = "#D9D9D9"
-    rcParams["figure.facecolor"] = "#D9D9D9"
-    rcParams["axes.facecolor"] = "#EFEFEF"
+    rcParams["keymap.forward"].append("ctrl+y")
+    rcParams["figure.edgecolor"] = figure_color
+    rcParams["figure.facecolor"] = figure_color
+    rcParams["axes.facecolor"] = axes_color
