@@ -19,8 +19,14 @@ def config_mpl_cmd():
     rcParams["keymap.back"].append("ctrl+z")
 
 
-def config_mpl_color(figure_color, axes_color):
+def config_mpl_color(figure_color, axes_color, grid_color, text_color):
     """Change rcParams for matplotlib plots"""
     rcParams["figure.edgecolor"] = figure_color
     rcParams["figure.facecolor"] = figure_color
     rcParams["axes.facecolor"] = axes_color
+    rcParams["grid.color"] = grid_color
+    rcParams["text.color"] = text_color
+    rcParams["xtick.color"] = text_color
+    rcParams["ytick.color"] = text_color
+    rcParams["axes.edgecolor"] = text_color
+    rcParams["axes.labelcolor"] = text_color
