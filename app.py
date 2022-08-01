@@ -11,8 +11,12 @@ from random import randint
 from modules import create_tool_tip, NavigationToolbar, convert
 from config import config_mpl_cmd, config_mpl_color
 
-__version__ = "0.1"
-author = "TerraBoii"
+# const
+AUTHOR = "TerraBoii"
+APP_NAME = "Physics app"
+WIDTH = 1000
+HEIGHT = 600
+ARIAL13 = ("Arial", 13)
 
 # File reading section
 parser = ConfigParser()
