@@ -15,8 +15,14 @@ def config_mpl_cmd():
     rcParams["keymap.forward"].remove("v")
     rcParams["keymap.back"].remove("backspace")
     # Change params
+    rcParams["keymap.home"] = ["h", "home", "р"]
+    # Add params
     rcParams["keymap.forward"].append("ctrl+y")
+    rcParams["keymap.grid_minor"].append("П")
     rcParams["keymap.back"].append("ctrl+z")
+    rcParams["keymap.grid"].append("п")
+    rcParams["keymap.zoom"].append("щ")
+    rcParams["keymap.pan"].append("з")
 
 
 def config_mpl_color(figure_color, axes_color, grid_color, text_color):
