@@ -8,6 +8,8 @@ from platform import system
 from pyperclip import copy 
 from random import randint
 
+from modules import create_tool_tip, NavigationToolbar, convert
+from config import config_mpl_cmd, config_mpl_color
 
 __version__ = "0.1"
 author = "TerraBoii"
