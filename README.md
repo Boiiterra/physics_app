@@ -25,6 +25,11 @@ $C_p=\frac{i+2}{2}R$,&nbsp;&nbsp;&nbsp; $C_v=\frac{i}{2}R$\
 monoatomic gas: $i = 3$ \
 diatomic gas: $i = 5$ \
 multi-atomic gas: $i = 6$
+
+Polytropic: $pV^n=const$
+- $p$ is the pressure
+- $V$ is volume
+- $n$ is the polytropic index -> $n=1/(γ−1)$
 ___
 
 # Physics app
