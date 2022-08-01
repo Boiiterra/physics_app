@@ -44,6 +44,11 @@ bg = parser.get("colors", "background")
 # Info
 a_u = parser.get("info", "auto_update")
 
+# * Change only when finished adding new features or fixed something. 
+# ! NO LETTERS IN VERSION STRING
+# * Version examples: "0.1.0125", "2.1.2", etc.
+# ! NO: "v0.1xd" | Reason: "I don't like it" - TerraBoii
+version = "0.1"
 
 class ToolTip(object):
 
