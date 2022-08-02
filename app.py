@@ -8,7 +8,7 @@ from platform import system
 from pyperclip import copy 
 from random import randint
 
-from modules import create_tool_tip, NavigationToolbar, convert
+from modules import create_tool_tip, NavigationToolbar, tmpr_convert
 from config import config_mpl_cmd, config_mpl_color
 
 # const

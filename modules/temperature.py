@@ -3,13 +3,13 @@ from decimal import Decimal
 
 
 class SpecialKeyError(Exception):
-    """Custom exception for convert function"""
+    """Custom exception for tmpr_convert function"""
 
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
 
 
-def convert(number: Decimal, to: str, _from: str) -> Decimal:
+def tmpr_convert(number: Decimal, to: str, _from: str) -> Decimal:
     """number: Decimal --> This is temperature value that is going to be converted\n
     ---
     to: str --> "c", "f" or "k" (special key)\n
