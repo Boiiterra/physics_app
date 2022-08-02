@@ -1,12 +1,16 @@
-from tkinter import Tk, Frame, Button, Text, Label, Entry, Toplevel, Menu, TclError
-from pyautogui import position as mouse_pos
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.backend_bases import key_press_handler
+from matplotlib.figure import Figure
+import matplotlib.pylab as plt
+import numpy as np
+
+from tkinter import Label, Entry, OptionMenu, StringVar, Tk, Frame, Button, Toplevel, Menu
+from random import choice
+
 from tkinter.messagebox import showinfo
-from configparser import ConfigParser
 from webbrowser import open_new_tab
-from PIL import Image, ImageTk
-from platform import system
-from pyperclip import copy 
-from random import randint
+from PIL import ImageTk, Image
+from decimal import Decimal
 
 from modules import create_tool_tip, NavigationToolbar, tmpr_convert
 from config import config_mpl_cmd, config_mpl_color
@@ -31,31 +35,6 @@ current_graph: int = 0 # * Graph chosen by user -> P(v) -- 0 (default), P(T) -- 
 degree_of_freedom: int = 3  # * It is number of degree of freedom for atoms in gas, default -> 3 (Monoatomic gas); diatomic -> 5; multi-atomic -> 6
 digits = 3 # * digits after dot (For Decimal values): 3 -> 0.001; 2 -> 0,01; 1 -> 0,1; 0 -> 1; 3 is MAXIMUM (cuz lots of numbers is not good, imho)
 
-# File reading section
-parser = ConfigParser()
-parser.read("data.txt")
-# Parameters:
-x_pos = parser.get('parameters', 'x')
-y_pos = parser.get('parameters', 'y')
-_width = parser.get('parameters', 'width')
-_state = parser.get('parameters', 'zoomed')
-_height = parser.get('parameters', 'height')
-# Language
-lng_state = parser.get("language", 'state')
-current_language = parser.get("language", "language")
-# Colors and theme
-home_btn_active_fg = parser.get("colors", "home_bts_active_fore")
-num_active_fg = parser.get("colors", "num_btn_active_fore")
-active_fg = parser.get("colors", "active_foreground")
-current_theme = parser.get('theme', "current_theme")
-home_btn_fg = parser.get("colors", "home_btn_fore")
-main_btn_bg = parser.get("colors", "main_btn_back")
-num_bg = parser.get("colors", "num_btn_back")
-num_fg = parser.get("colors", "num_btn_fore")
-fg = parser.get("colors", "foreground")
-bg = parser.get("colors", "background")
-# Info
-a_u = parser.get("info", "auto_update")
 
 # * Change only when finished adding new features or fixed something. 
 # ! NO LETTERS IN VERSION STRING
@@ -63,505 +42,146 @@ a_u = parser.get("info", "auto_update")
 # ! NO: "v0.1xd" | Reason: "I don't like it" - TerraBoii
 version = "0.1"
 
-class ToolTip(object):
 
-    def __init__(self, widget, id):
-        self.widget = widget
-        self.tipwindow = None
-        self.x = self.y = 0
-        self.id = id
+ef = "#EFEFEF"
+# Settings data ??? Will be reimplemented or not ???
+# Theme
+current_theme = "light"
+# Global colors
+bg = "#D9D9D9"
+fg = "#000000"
+dis_fg = "#848484" # Disabled foreground
+# Menubar specific colors
+menu_active_bg = "#E9E9E9"
+# Buttons specific colors
+btn_active_bg = "#CDCDCD"
+btn_normal_bg = "#C0C0C0"
+# Entries specific colors
+entry_bg = "#ffffff"
+entry_border = "#000000"
+# mpl colors
+axes_color = "#FFFFFF"
+grid_color = "#b0b0b0"
+text_color = "#000000"
+# language
+current_language = "rus"
+# graph position
+graph_pos: bool = True # * False -> right side; True -> left side (default)
 
-    def showtip(self, text):
-        self.text = text
-        if self.tipwindow or not self.text:
-            return
-        mouse_x, mouse_y = mouse_pos()
-        if mouse_x <= 1700 and current_language == "eng" and self.id == 0:
-            x = mouse_x + 14
-            y = mouse_y + 1
-        elif mouse_x <= 1600 and current_language == "rus" and self.id == 0:
-            x = mouse_x + 14
-            y = mouse_y + 1
-        elif mouse_x > 1700 and current_language == "eng" and self.id == 0:
-            x = mouse_x - 148
-            y = mouse_y + 1
-        elif mouse_x > 1600 and current_language == "rus" and self.id == 0:
-            x = mouse_x - 214
-            y = mouse_y + 1
-        elif mouse_x <= 1700 and 0 < self.id < 7:
-            x = mouse_x + 14
-            y = mouse_y + 1
-        elif mouse_x > 1700 and current_language == "rus" and self.id == 1:
-            x = mouse_x - 165
-            y = mouse_y + 1
-        elif mouse_x > 1700 and current_language == "rus" and self.id == 2:
-            x = mouse_x - 140
-            y = mouse_y + 1
-        elif mouse_x > 1700 and current_language == "rus" and self.id == 3:
-            x = mouse_x - 150
-            y = mouse_y + 1
-        elif mouse_x > 1700 and current_language == "rus" and  4 <= self.id <= 6:
-            x = mouse_x - 200
-            y = mouse_y + 1
-        elif mouse_x > 1700 and current_language == "eng" and (self.id == 1 or self.id == 4):
-            x = mouse_x - 145
-            y = mouse_y + 1
-        elif mouse_x > 1700 and current_language == "eng" and (self.id == 2 or self.id == 5):
-            x = mouse_x - 150
-            y = mouse_y + 1
-        elif mouse_x > 1700 and current_language == "eng" and (self.id == 3 or self.id == 6):
-            x = mouse_x - 110
-            y = mouse_y + 1
-        
-        self.tipwindow = tw = Toplevel(self.widget)
-        tw.wm_overrideredirect(1)
-        tw.wm_geometry("+%d+%d" % (x, y))
-        label = Label(tw, text=self.text, justify="left",
-                      background="#ffffe0", relief="solid", borderwidth=1,
-                      font=("tahoma", "10", "normal"))
-        label.pack(ipadx=1)
-
-    def hidetip(self):
-        tw = self.tipwindow
-        self.tipwindow = None
-        if tw:
-            tw.destroy()
+config_mpl_cmd()
+config_mpl_color(bg, axes_color, grid_color, text_color)
 
 
-def CreateToolTip(widget, text, id):
-    toolTip = ToolTip(widget, id)
-    def enter(_):
-        toolTip.showtip(text)
-    def leave(_):
-        toolTip.hidetip()
-    widget.bind('<Enter>', enter)
-    widget.bind('<Leave>', leave)
+class WrongArgument(Exception):
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)
 
 
-def set_theme():  # This function updates colors after theme changed
-    global current_theme, bg, fg, active_fg, home_btn_active_fg, home_btn_fg, main_btn_bg, num_bg, num_fg, num_active_fg
-    home_btn_active_fg = parser.get("colors", "home_bts_active_fore")
-    num_active_fg = parser.get("colors", "num_btn_active_fore")
-    active_fg = parser.get("colors", "active_foreground")
-    current_theme = parser.get('theme', "current_theme")
-    home_btn_fg = parser.get("colors", "home_btn_fore")
-    main_btn_bg = parser.get("colors", "main_btn_back")
-    num_bg = parser.get("colors", "num_btn_back")
-    num_fg = parser.get("colors", "num_btn_fore")
-    fg = parser.get("colors", "foreground")
-    bg = parser.get("colors", "background")
-
-
-def a_u_state_set(state):
-    global a_u, parser
-
-    parser.read("data.txt")
-
-    if state == 1:
-        parser.set("info", "auto_update", "True")
-    elif state == 0:
-        parser.set("info", "auto_update", "False")
-
-    with open("data.txt", "w") as configfile:
-        parser.write(configfile)
-    parser.get("info", "auto_update")
-
-
-def change_language(language: str):  # This function changes language for whole application
-    global parser, current_language, lng_state
-
-    if language == "rus":
-        parser.read('data.txt')
-        parser.set("language", 'state', 'keep')
-        parser.set('language', "language", 'rus')
-        with open("data.txt", "w") as configfile:
-            parser.write(configfile)
-        lng_state = parser.get('language', 'state')
-        current_language = parser.get('language', 'language')
-    elif language == "eng":
-        parser.read('data.txt')
-        parser.set("language", 'state', 'keep')
-        parser.set('language', "language", 'eng')
-        with open("data.txt", "w") as configfile:
-            parser.write(configfile)
-        lng_state = parser.get('language', 'state')
-        current_language = parser.get('language', 'language')
-    elif language == "unknown":
-        parser.read('data.txt')
-        parser.set("language", 'state', 'ask')
-        parser.set('language', "language", 'unknown')
-        with open("data.txt", "w") as configfile:
-            parser.write(configfile)
-        lng_state = parser.get('language', 'state')
-        current_language = parser.get('language', 'language')
-
-
-def dark_theme():  # This function changes colors and theme to dark and saves changes to file
-    global parser
-    parser.read("data.txt")
-    parser.set("theme", "current_theme", "dark")
-    parser.set("colors", "background", "#000000")
-    parser.set("colors", "num_btn_back", "#0a0a0a")
-    parser.set("colors", "home_btn_fore", "#474747")
-    parser.set("colors", "active_foreground", "#5e5e5e")
-    parser.set("colors", "home_bts_active_fore", "#333333")
-    parser.set("colors", "num_btn_active_fore", "#5e5e5e")
-    parser.set("colors", "main_btn_back", "#000000")
-    parser.set("colors", "num_btn_fore", "#8c8c8c")
-    parser.set("colors", "foreground", "#ffffff")
-    with open("data.txt", 'w') as configfile:
-        parser.write(configfile)
-    # Set colors
-    parser.read("data.txt")
-    set_theme()
-
-
-def light_theme():  # This function changes colors and theme to light and saves changes to file
-    global parser
-    parser.read("data.txt")
-    parser.set('theme', "current_theme", "light")
-    parser.set("colors", "num_btn_back", "#999999")
-    parser.set("colors", "home_btn_fore", "#404040")
-    parser.set("colors", "active_foreground", "#000000")
-    parser.set("colors", "home_bts_active_fore", "#5e5e5e")
-    parser.set("colors", "num_btn_active_fore", "#787878")
-    parser.set("colors", "main_btn_back", "#292929")
-    parser.set("colors", "num_btn_fore", "#4d4d4d")
-    parser.set("colors", "foreground", "#000000")
-    parser.set("colors", "background", "#bababa")
-    with open("data.txt", 'w') as configfile:
-        parser.write(configfile)
-    # Set colors
-    parser.read("data.txt")
-    set_theme()
-
-
-def save_window_parameters(_width_, _height_, _x_, _y_, _state_):
-    # Saves given params to data.txt file
-    global parser
-    parser.read("data.txt")
-    parser.set('parameters', 'height', _height_)
-    parser.set('parameters', 'zoomed', _state_)
-    parser.set('parameters', 'width', _width_)
-    parser.set('parameters', 'x', _x_)
-    parser.set('parameters', 'y', _y_)
-    with open("data.txt", 'w') as configfile:
-        parser.write(configfile)
-
-
-class MainAppBody(Tk):  # Main application with page logic
-
+class MainAppBody(Tk):
     def __init__(self, *args, **kwargs):
         Tk.__init__(self, *args, **kwargs)
-        self.title(f"Physics app - {__version__}")
-        try:
-            self.iconbitmap("images//main_icon.ico")
-        except TclError:
-            print("Unable to find icon file")
-        # Setting max and min sizes for the app
-        self.minsize(width=800, height=600)
-        self.maxsize(self.winfo_screenwidth(), self.winfo_screenheight())
+        self.title(f"{APP_NAME} - {version}")  # App's title
+        # TODO: Create icon for the app
+        # self.iconbitmap("icon.ico")  # icon file
+        self.geometry(
+            f"{WIDTH}x{HEIGHT}+{(self.winfo_screenwidth() - WIDTH) // 2}+{(self.winfo_screenheight() - HEIGHT) // 2}"
+        )  # MIddle of the screen
+        self.resizable(0, 0)
 
-        # creating window:
-        if current_language == "unknown" or lng_state == "ask" or system() == "Linux":
-            middle_x = int((self.winfo_screenwidth() - 800) / 2)
-            middle_y = int((self.winfo_screenheight() - 600) / 2)
-            self.geometry(f"{800}x{600}+{middle_x}+{middle_y}")  # Middle pos on the screen
-        else:
-            self.geometry(f"{int(_width)}x{int(_height)}+{int(x_pos) - 8}+{(int(y_pos))-31}")  # (- 8) and (- 31) is important
+        # Menu bar with help button
+        menubar = Menu(self, tearoff=0, bd=1, bg=bg)
+        # File submenu
+        file_menu = Menu(menubar, tearoff=0)
+        file_menu.add_command(label="Export", background=bg, foreground=fg, activeforeground=fg, activebackground=menu_active_bg, command=lambda: print("Export"))
+        file_menu.add_command(label="Import", background=bg, foreground=fg, activeforeground=fg, activebackground=menu_active_bg, command=lambda: print("Import"))
+        file_menu.add_command(label="Clear", background=bg, foreground=fg, activeforeground=fg, activebackground=menu_active_bg, command=lambda: print("Clear"))
+        file_menu.add_separator(background=bg)
+        file_menu.add_command(label="Quit", background=bg, foreground=fg, activeforeground=fg, activebackground=menu_active_bg, command=lambda: print("Quit"))
+        menubar.add_cascade(label="File", menu=file_menu, background=bg, foreground=fg, activebackground=menu_active_bg, activeforeground=fg)
+        # Edit submenu
+        edit_menu = Menu(menubar, tearoff=0)
+        edit_menu.add_command(label="Settings", background=bg, foreground=fg, activeforeground=fg, activebackground=menu_active_bg, command=lambda: Settings(self))
+        menubar.add_cascade(label="Edit", menu=edit_menu, background=bg, foreground=fg, activebackground=menu_active_bg, activeforeground=fg)
 
-        # Rewriting default delete method in order to save window parameters
-        if system() == "Windows":
-            self.protocol('WM_DELETE_WINDOW', self.delete_window)
-            if _state == 'yes':
-                self.state('zoomed')
+        menubar.add_command(label="\u22EE", activebackground=bg, background=bg, foreground=fg, activeforeground=fg)
+        # Help submenu
+        help_menu = Menu(menubar, tearoff=0)
+        help_menu.add_command(label="Help", background=bg, foreground=fg, activeforeground=fg, activebackground=menu_active_bg, command=lambda: Help(self))
+        help_menu.add_separator(background=bg)
+        help_menu.add_command(label="About", background=bg, foreground=fg, activeforeground=fg, activebackground=menu_active_bg, command=lambda: About(self))
+        menubar.add_cascade(label="Help", menu=help_menu, background=bg, foreground=fg, activebackground=menu_active_bg, activeforeground=fg)
+        self.config(menu=menubar)
 
-        def donothing():
-            print("Sorry I printed this!")
-
-        def about():
-            About(self)
-
-        def full_reset():
-
-            warning_box = Toplevel()
-            warning_box.transient(self)
-            warning_box.grab_set()
-            warning_box.title('Warning - data reset')
-            warning_box.geometry("317x102")
-            warning_box.resizable(0, 0)
-            if current_language == "eng":
-                message = "Are you sure that you want to reset\napp's data?"
-            elif current_language == "rus":
-                message="Вы уверены, что хотите сбросить\nданные приложения?"
-
-            mes_cont = Frame(warning_box)
-            mes_cont.pack(side="top", expand=True, fill="x", anchor="w")
-            mes_cont.rowconfigure(0, weight=1)
-            mes_cont.columnconfigure(0, weight=1)
-            mes_cont.columnconfigure(1, weight=1)
-
-            photo = ImageTk.PhotoImage(Image.open('images/warning.png'))
-            label = Label(mes_cont, image=photo)
-            label.image = photo
-            label.grid(row=0, column=0, padx=6)
-            Label(mes_cont, text=message, font=("Times New Roman", 11, "bold")).grid(row=0, column=1, sticky="w")
-
-            but_cont = Frame(warning_box)
-            but_cont.pack(side="bottom", pady=7)
-            but_cont.rowconfigure(0, weight=1)
-            but_cont.columnconfigure(0, weight=1)
-            but_cont.columnconfigure(1, weight=1)
-
-            def run(do=None):
-                if do is not None:
-                    change_language("unknown")
-                    light_theme()
-                    self.destroy()
-                else:
-                    warning_box.destroy()
-
-            Button(but_cont, text='Yes', command=lambda: run(True), width=7).grid(row=0, column=0, padx=10)
-            Button(but_cont, text="No", command=run, width=7).grid(row=0, column=1, padx=10)
-
-        def reset():
-            if current_language == "eng":
-                message = "Graph's data is reseted:\n- Pressure -> <None>.\n- Volume -> <None>.\n- Temperature -> <None>.\n- Gas -> <None>."
-            elif current_language == "rus":
-                message = "Данные графика были сброшены:\n- Давление -> <None>.\n- Объем -> <None>.\n- Температура -> <None>.\n- Газ -> <None>."
-            showinfo("Graph reset", message)
-            self.get_page(MainPage).data_reset()
-
-        def settings():
-            self.show_frame(Settings)
-
-        self.menubar = Menu(self)
-        file_menu = Menu(self.menubar, tearoff=0)
-        file_menu.add_command(label="New", command=donothing)
-        file_menu.add_command(label="Open", command=donothing)
-        file_menu.add_command(label="Save", command=donothing)
-        file_menu.add_command(label="Save as...", command=donothing)
-        file_menu.add_command(label="Reset", command=reset)
-        file_menu.add_separator()
-        file_menu.add_command(label="Exit", command=self.quit)
-        self.menubar.add_cascade(label="File", menu=file_menu)
-        edit_menu = Menu(self.menubar, tearoff=0)
-        edit_menu.add_command(label="Reset app", command=full_reset)
-        edit_menu.add_separator()
-        edit_menu.add_command(label="Settings", command=settings)
-        self.menubar.add_cascade(label="Edit", menu=edit_menu)
-        help_menu = Menu(self.menubar, tearoff=0)
-        help_menu.add_command(label="About...", command=about)
-        self.menubar.add_cascade(label="Help", menu=help_menu)
-        if current_language != "unknown" or lng_state != "ask":
-            self.add_menu()
-
-        container = Frame(self, bg="black")
+        # Place page into app
+        container = Frame(self)
         container.pack(side="top", fill="both", expand=True)
-
         container.grid_rowconfigure(0, weight=1)
-        container.columnconfigure(0, weight=1)
-
-        self.bind("<Control q>", lambda _: self.quit())
+        container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
 
-        frame_collection = (FLaunchPage, MainPage, Settings)
+        frame_collection = (
+            MainPage,
+        )  # * ALL PAGES MUST BE LISTED HERE!!! (Frame classes). All listed pages are going to be constructed
 
         for frame in frame_collection:
             current_frame = frame(container, self)
-
             self.frames[frame] = current_frame
-
             current_frame.grid(row=0, column=0, sticky="nsew")
-        if lng_state == "ask" or current_language == "unknown":
-            self.show_frame(FLaunchPage)
-        elif lng_state == "keep":
-            self.show_frame(MainPage)
 
-    def delete_window(self):  # saves parameters and then deletes window
-        if self.wm_state() == "zoomed" and lng_state != "ask" and current_language != "unknown":
-            save_window_parameters(str(self.winfo_width()), str(self.winfo_height()),
-                                   str(self.winfo_rootx()), str(self.winfo_rooty()), 'yes')
-        elif self.wm_state() != "zoomed" and lng_state != "ask" and current_language != "unknown":
-            save_window_parameters(str(self.winfo_width()), str(self.winfo_height()),
-                                   str(self.winfo_rootx()), str(self.winfo_rooty()), 'no')
-        self.destroy()
+        self.show_frame(MainPage)
+
+        # Creating attributes (menu) to call from methods
+        self.menubar = menubar
+        self.file_menu = file_menu
+        self.help_menu = help_menu
+        self.edit_menu = edit_menu
+
+        if current_language == "rus":
+            self.set_lang_menu(True)
+
+    def set_lang_menu(self, from_main_app_body: bool = None):
+        # * If in `MainAppBody class` usage -> if current_language == "rus": self.set_lang_menu(True)
+        # * If in `Settings` -> after current_language is changed, parent.set_lang_menu()
+        # ! Anywhere else -> DO NOT USE
+        match current_language, from_main_app_body:
+            case "eng", None:
+                self.menubar.entryconfig("Помощь...", label="Help")
+                self.menubar.entryconfig("Изменить", label="Edit")
+                self.menubar.entryconfig("Файл", label="File")
+                self.file_menu.entryconfig("Импортировать", label="Import")
+                self.file_menu.entryconfig("Экспортировать", label="Export")
+                self.file_menu.entryconfig("Очистить", label="Clear")
+                self.file_menu.entryconfig("Выйти", label="Quit")
+                self.edit_menu.entryconfig("Настройки", label="Settings")
+                self.help_menu.entryconfig("Помощь", label="Help")
+                self.help_menu.entryconfig("О приложении", label="About")
+            case "eng", _:
+                raise WrongArgument(f'Got wrong arguments "{current_language}" and "{from_main_app_body}"')
+            case "rus", None:
+                raise WrongArgument(f'Got wrong arguments "{current_language}" and "{from_main_app_body}"')
+            case "rus", _:
+                self.menubar.entryconfig("Help", label="Помощь...")
+                self.menubar.entryconfig("Edit", label="Изменить")
+                self.menubar.entryconfig("File", label="Файл")
+                self.file_menu.entryconfig("Import", label="Импортировать")
+                self.file_menu.entryconfig("Export", label="Экспортировать")
+                self.file_menu.entryconfig("Clear", label="Очистить")
+                self.file_menu.entryconfig("Quit", label="Выйти")
+                self.edit_menu.entryconfig("Settings", label="Настройки")
+                self.help_menu.entryconfig("Help", label="Помощь")
+                self.help_menu.entryconfig("About", label="О приложении")
 
     def show_frame(self, cont):
-        frame = self.frames[cont]
-        frame.tkraise()
+        """This is used to show any page (page MUST be listed in frame_collection)"""
+        self.frames[cont].tkraise()
 
     def get_page(self, page_class):
+        """Gets methods of the given page and its variables with "self." in front of them, ex.: self.variable_name)"""
         return self.frames[page_class]
-
-    def add_menu(self):
-        self.config(menu=self.menubar)
-
-
-class About(Toplevel):
-    def __init__(self, parent):
-        Toplevel.__init__(self, parent, bg=bg)
-
-        self.transient(parent)
-        self.grab_set()
-        x = (self.winfo_screenwidth() - 313) / 2
-        y = (self.winfo_screenheight() - 250) / 2
-        self.geometry('{0}x{1}+{2}+{3}'.format(313, 250, int(x), int(y)))
-        self.resizable(0, 0)
-        self.title('Physics app')
-
-        def call_link(_):
-            open_new_tab('https://github.com/TerraBoii')
-
-        def entered(_):
-            a_text.config(font=("TkDefaultFont", 12, "underline"), cursor="hand2", fg="blue")
-            toolTip.showtip(tip_txt)
-
-        def left(_):
-            a_text.config(font=("TkDefaultFont", 12), cursor="", fg=fg)
-            toolTip.hidetip()
-
-        a_u_t = None 
-
-        if current_language == "eng":
-            if a_u == "False":
-                a_u_t = "off"
-            elif a_u == "True":
-                a_u_t = "on"
-
-            title_t = "Physics app"
-            txt3 = f"Auto update - {a_u_t}"
-            txt5 = f"App's author - {author}"
-            tip_txt = "Link to autor's profile"
-            txt1 = f"App version - {__version__}"
-            txt2 = f"App's theme - {current_theme}"
-            txt4 = f"App's language - {current_language}"
-        elif current_language == "rus":
-            if a_u == "False":
-                a_u_t = "выкл"
-            elif a_u == "True":
-                a_u_t = "вкл"
-
-            txt4 = f"Язык приложения - {current_language}"
-            txt2 = f"Тема приложения - {current_theme}"
-            txt1 = f"Версия приложения - {__version__}"
-            tip_txt = "Ссылка на профиль создателя"
-            txt5 = f"Автор приложения - {author}"
-            txt3 = f"Авто обновление - {a_u_t}"
-            title_t = "Physics app"
-
-        title = Label(self, text=title_t, font=("TkDefaultFont", 15), pady=5, bg=bg, fg=fg)
-        title.pack()
-
-        Button(self, text='OK', font=15, command=self.destroy, pady=10, width=7, highlightbackground=bg, 
-               bg=num_bg, fg=fg, bd=0, activebackground=num_bg, activeforeground=active_fg).pack(side="bottom")
-        Label(self, font=("Times New Roman", 1), bg=bg).pack()  # Placeholder
-        Label(self, width=3, bg=bg).pack(side="left", fill="y")  # Placeholder
-
-        Label(self, text=txt1, font=("TkDefaultFont", 12), anchor="w", bg=bg, fg=fg).pack(fill="x")
-        Label(self, text=txt2, font=("TkDefaultFont", 12), anchor="w", bg=bg, fg=fg).pack(fill="x")
-        Label(self, text=txt3, font=("TkDefaultFont", 12), anchor="w", bg=bg, fg=fg).pack(fill="x")
-        Label(self, text=txt4, font=("TkDefaultFont", 12), anchor="w", bg=bg, fg=fg).pack(fill="x")
-        a_text = Label(self, text=txt5, font=("TkDefaultFont", 12), anchor="w", bg=bg, fg=fg)
-        a_text.pack(fill="x")
-        toolTip = ToolTip(a_text, 0)
-        a_text.bind("<Leave>", left)
-        a_text.bind("<Enter>", entered)
-        a_text.bind("<Button-1>", call_link)
-
-
-class FLaunchPage(Frame):  # This page launches when you need to choose language
-
-    def __init__(self, parent, controller):
-        Frame.__init__(self, parent, bg="black")
-        self.controller = controller
-
-        question_text = "\nChoose language:"
-
-        question = Label(self, text=question_text, bg="black", fg="#00ff00", font=("Arial", 40))
-        question.pack(side="top")
-
-        hint_text = "You can always change\nlanguage in settings menu"
-
-        bottom_ = Label(self, bg="black", text=hint_text, font=("Arial", 30), fg="#008000")
-        bottom_.pack(side="bottom")
-
-        lang_btn_container = Label(self, bg="black", justify="center")
-        lang_btn_container.pack(expand=True)
-
-        lang_btn_container.rowconfigure(0, weight=1)
-        lang_btn_container.rowconfigure(1, weight=1)
-        lang_btn_container.columnconfigure(0, weight=1)
-
-        self.russian = Button(lang_btn_container, text="Русский", bg="black", fg="#00ff00",
-                         activeforeground="#008000", font=("Arial", 30), bd=0, highlightbackground="black")
-        self.russian.grid(row=0, column=0, sticky="nsew")
-
-        self.english = Button(lang_btn_container, text="English", bg="black", fg="#00ff00",
-                         activeforeground="#008000", font=("Arial", 30), bd=0, highlightbackground="black")
-        self.english.grid(row=1, column=0, sticky="nsew")
-
-        def entered(_, btn, lang: str):
-            btn.config(bg="#008000", activebackground="#00ff00")
-            _question_text = _hint_text = ''
-            if lang == "eng":
-                _question_text = "\nChoose language:"
-                _hint_text = "You can always change\nlanguage in settings menu"
-            elif lang == "rus":
-                _question_text = "\nВыберите язык:"
-                _hint_text = "Язык можно\nизменить в настройках"
-            question.config(text=_question_text)
-            bottom_.config(text=_hint_text)
-
-        def left(_, btn):
-            btn.config(bg="black")
-
-        self.english.bind("<Leave>", lambda _: left(_, btn=self.english))
-        self.russian.bind("<Button-1>", lambda _: self.new_lang(_, lang="rus"))
-        self.russian.bind("<Enter>", lambda _: entered(_, btn=self.russian, lang='rus'))
-        self.english.bind("<Enter>", lambda _: entered(_, btn=self.english, lang='eng'))
-        self.english.bind("<Button-1>", lambda _: self.new_lang(_, lang="eng"))
-        self.russian.bind("<Leave>", lambda _: left(_, btn=self.russian))
-
-        def font_resize_for_flaunchpage(width):
-            if width.height <= 620:
-                bottom_.config(font=("Arial", 30))
-                question.config(font=('Arial', 40))
-                self.russian.config(font=('Arial', 30))
-                self.english.config(font=('Arial', 30))
-            elif 620 < width.height <= 700:
-                self.english.config(font=('Arial', 35))
-                self.russian.config(font=('Arial', 35))
-                question.config(font=('Arial', 45))
-                bottom_.config(font=("Arial", 35))
-            elif 700 < width.height <= 800:
-                bottom_.config(font=("Arial", 40))
-                question.config(font=('Arial', 50))
-                self.russian.config(font=('Arial', 40))
-                self.english.config(font=('Arial', 40))
-            elif width.height > 800:
-                self.english.config(font=('Arial', 45))
-                self.russian.config(font=('Arial', 45))
-                question.config(font=('Arial', 55))
-                bottom_.config(font=("Arial", 45))
-
-        self.bind("<Configure>", font_resize_for_flaunchpage)
-
-    def new_lang(self, _, lang: str, _from = None):
-        change_language(lang)
-        self.controller.add_menu()
-        page = self.controller.get_page(MainPage)
-        page.set_main_lang()
-        page = self.controller.get_page(Settings)
-        page.set_lang_settings()
-
-        if _from is None:  # We don't need to go to main page after switching language in settings
-            self.controller.show_frame(MainPage)
 
 
 class MainPage(Frame):
-
     def __init__(self, parent, controller):
         Frame.__init__(self, parent, bg=bg)
         self.controller = controller
@@ -569,391 +189,1074 @@ class MainPage(Frame):
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
 
-        self.left_part = Frame(self, bg=bg)
-        self.left_part.grid(row=0, column=0, sticky="nsew")
+        # Side for graph
+        graph_cont = Frame(self, height=HEIGHT, width=(WIDTH // 2), bg=bg)
+        graph_cont.grid(row=0, column=0, sticky="nsew")
+        # graph_cont.pack(side="left", expand=True, fill="both")
 
-        self.right_part = Frame(self, bg=bg)
-        self.right_part.grid(row=0, column=1, sticky="nsew")
+        def change_graph_to(new_graph: int):
+            global current_graph
+            match new_graph:
+                case 0: # P(V)
+                    graph_pv.config(state="disabled", cursor="")
+                    graph_pt.config(state="normal", cursor="hand2")
+                    graph_vt.config(state="normal", cursor="hand2")
 
-        self.hint = ""
-        self.p_tip = ""
-        self.t_tip = ""
-        self.v_tip = ""
-        self.temp_pr = "None"
-        self.volume_pr = "None"
-        self.pressure_pr = "None"
-        font_vi = ("TkDefaultFont", 13, "bold")
+                    ax.clear()
+                    if data:
+                        values = np.arange(0, (2*np.pi)+0.001, 0.001)
+                        ax.plot(values, -np.cos(values*2))
+                    ax.set_title("P(V)")
+                    ax.set_ylabel("P")
+                    ax.set_xlabel("V")
+                    canvas.draw()
 
-        self.pr_data_i = Label(self.left_part, font=font_vi, bg=bg, fg=fg)
-        self.pr_data_i.pack(side="top", anchor="nw", pady=7, padx=45)
+                    current_graph = new_graph
+                case 1: # P(T)
+                    graph_pv.config(state="normal", cursor="hand2")
+                    graph_pt.config(state="disabled", cursor="")
+                    graph_vt.config(state="normal", cursor="hand2")
 
-        self.cont_pr = Label(self.left_part, bg=bg)
-        self.cont_pr.pack(side='left', anchor="nw", padx=30)
-        self.cont_pr.rowconfigure(0, weight=1)
-        self.cont_pr.rowconfigure(1, weight=1)
-        self.cont_pr.columnconfigure(0, weight=1)
-        self.cont_pr.columnconfigure(1, weight=1)
-        self.cont_pr.columnconfigure(2, weight=1)
+                    ax.clear()
+                    if data:
+                        values = np.arange(0, (2*np.pi)+0.001, 0.001)
+                        ax.plot(values, np.cos(values*2))
+                    ax.set_title("P(T)")
+                    ax.set_ylabel("P")
+                    ax.set_xlabel("T")
+                    canvas.draw()
 
-        self.new_data_i = Label(self.right_part, font=font_vi, bg=bg, fg=fg)
-        self.new_data_i.pack(side="top", anchor="ne", pady=7, padx=45)
+                    current_graph = new_graph
+                case 2: # V(T)
+                    graph_pv.config(state="normal", cursor="hand2")
+                    graph_pt.config(state="normal", cursor="hand2")
+                    graph_vt.config(state="disabled", cursor="")
 
-        self.cont_new = Label(self.right_part, bg=bg)
-        self.cont_new.pack(side='right', anchor="ne", padx=30)
-        self.cont_new.rowconfigure(0, weight=1)
-        self.cont_new.rowconfigure(1, weight=1)
-        self.cont_new.rowconfigure(2, weight=1)
-        self.cont_new.columnconfigure(0, weight=1)
-        self.cont_new.columnconfigure(1, weight=1)
-        self.cont_new.columnconfigure(2, weight=1)
+                    ax.clear()
+                    if data:
+                        values1 = np.arange(0, (2*np.pi)+0.001, 0.001)
+                        values2 = np.arange(-(2*np.pi), 0.001, 0.001)
+                        values = np.hstack([values1, values2])
+                        ax.plot(values, np.sqrt(np.abs(np.cos(values))))
+                    ax.set_title("V(T)")
+                    ax.set_ylabel("V")
+                    ax.set_xlabel("T")
+                    canvas.draw()
 
-        # Info
-        self.tp_v = Label(self.cont_pr, text="T", bg=bg, fg=fg, font=font_vi)
-        self.tp_v.grid(row=0, column=0, sticky="nsew")
-        self.vp_v = Label(self.cont_pr, text="V", bg=bg, fg=fg, font=font_vi)
-        self.vp_v.grid(row=0, column=1, sticky="nsew")
-        self.pp_v = Label(self.cont_pr, text="P", bg=bg, fg=fg, font=font_vi)
-        self.pp_v.grid(row=0, column=2, sticky="nsew")
+                    current_graph = new_graph
+                case _:
+                    if isinstance(new_graph, int):
+                        raise TypeError(f"Expected int but got {type(new_graph)}")
+                    else:
+                        raise ValueError(f'Unsupported value "{new_graph}"')
 
-        self.tn_v = Label(self.cont_new, text="T", bg=bg, fg=fg, font=font_vi)
-        self.tn_v.grid(row=0, column=0, sticky="nsew")
-        self.vn_v = Label(self.cont_new, text="V", bg=bg, fg=fg, font=font_vi)
-        self.vn_v.grid(row=0, column=1, sticky="nsew")
-        self.pn_v = Label(self.cont_new, text="P", bg=bg, fg=fg, font=font_vi)
-        self.pn_v.grid(row=0, column=2, sticky="nsew")
+        # Container with buttons that change graphs
+        graph_changer = Frame(graph_cont, bg=bg)
+        graph_changer.pack(pady=(4, 0))
 
-        # Previous data
-        self.tp_e = Entry(self.cont_pr, width=10, font=font_vi, disabledbackground=num_bg, disabledforeground=fg,
-                          bd=0, justify="center", highlightthickness=0)
-        self.tp_e.grid(row=1, column=0, pady=2, padx=5)
-        self.vp_e = Entry(self.cont_pr, width=10, font=font_vi, disabledbackground=num_bg, disabledforeground=fg,
-                          bd=0, justify="center", highlightthickness=0)
-        self.vp_e.grid(row=1, column=1, pady=2, padx=5)
-        self.pp_e = Entry(self.cont_pr, width=10, font=font_vi, disabledbackground=num_bg, disabledforeground=fg,
-                          bd=0, justify="center", highlightthickness=0)
-        self.pp_e.grid(row=1, column=2, pady=2, padx=5)
-        # New data
-        self.tn_e = Entry(self.cont_new, width=10, font=font_vi, highlightbackground=num_bg, bg=num_bg, fg=fg, bd=0, justify="center")
-        self.tn_e.grid(row=1, column=0, pady=2, padx=5)
-        self.vn_e = Entry(self.cont_new, width=10, font=font_vi, highlightbackground=num_bg, bg=num_bg, fg=fg, bd=0, justify="center")
-        self.vn_e.grid(row=1, column=1, pady=2, padx=5)
-        self.pn_e = Entry(self.cont_new, width=10, font=font_vi, highlightbackground=num_bg, bg=num_bg, fg=fg, bd=0, justify="center")
-        self.pn_e.grid(row=1, column=2, pady=2, padx=5)
+        gc_info = Label(
+            graph_changer, font=ARIAL13, bg=bg, fg=fg
+        )
+        gc_info.grid(row=0, column=0, columnspan=3)
 
-        self.insert_prev_data()
+        graph_pv = Button(
+            graph_changer,
+            activeforeground=fg,
+            background=btn_normal_bg,
+            command=lambda: change_graph_to(0),
+            activebackground=btn_active_bg,
+            disabledforeground=dis_fg,
+            font=ARIAL13,
+            text="P(V)",
+            padx=10,
+            fg=fg,
+            bd=0,
+        )
+        graph_pv.grid(row=1, column=0, padx=(0, 20), pady=5)
 
-        self.tp_e.bind("<Button-1>", lambda _: copy(self.temp_pr) if self.temp_pr != "None" else ...)
-        self.vp_e.bind("<Button-1>", lambda _: copy(self.volume_pr) if self.volume_pr != "None" else ...)
-        self.pp_e.bind("<Button-1>", lambda _: copy(self.pressure_pr) if self.pressure_pr != "None" else ...)
+        graph_pt = Button(
+            graph_changer,
+            activeforeground=fg,
+            background=btn_normal_bg,
+            command=lambda: change_graph_to(1),
+            activebackground=btn_active_bg,
+            disabledforeground=dis_fg,
+            font=ARIAL13,
+            text="P(T)",
+            padx=10,
+            fg=fg,
+            bd=0,
+        )
+        graph_pt.grid(row=1, column=1, padx=20, pady=5)
 
-        self.set_main_lang()
+        graph_vt = Button(
+            graph_changer,
+            activeforeground=fg,
+            background=btn_normal_bg,
+            command=lambda: change_graph_to(2),
+            activebackground=btn_active_bg,
+            disabledforeground=dis_fg,
+            font=ARIAL13,
+            text="V(T)",
+            padx=10,
+            fg=fg,
+            bd=0,
+        )
+        graph_vt.grid(row=1, column=2, padx=(20, 0), pady=5)
 
+        fig = plt.Figure(figsize=(5, 5), dpi=100)
+        t = np.arange(0, ((2 * np.pi) + 0.001), 0.001)
+        ax = fig.add_subplot(111)
+        ax.plot(t, t)
 
-    def insert_prev_data(self, clear=False):
-        self.tp_e.config(state="normal")
-        self.vp_e.config(state="normal")
-        self.pp_e.config(state="normal")
+        canvas = FigureCanvasTkAgg(fig, master=graph_cont)
+        # canvas.draw()
+        change_graph_to(0) # * Default graph -> 0
 
-        if clear: 
-            self.tp_e.delete(0, "end")
-            self.vp_e.delete(0, "end")
-            self.pp_e.delete(0, "end")
+        toolbar = NavigationToolbar(canvas, graph_cont, pack_toolbar=False)
+        toolbar.update()
 
-        self.tp_e.insert("end", self.temp_pr)
-        self.vp_e.insert("end", self.volume_pr)
-        self.pp_e.insert("end", self.pressure_pr)
+        canvas.mpl_connect("key_press_event", key_press_handler)
 
-        if not clear:
-            self.tn_e.insert("end", 0)
-            self.vn_e.insert("end", 0)
-            self.pn_e.insert("end", 0)
+        toolbar.pack(side="bottom", fill="x", expand=False, padx=(5, 0))
+        canvas.get_tk_widget().pack(fill="both", expand=True)
 
-        self.tp_e.config(state="disabled")
-        self.vp_e.config(state="disabled")
-        self.pp_e.config(state="disabled")
+        # Side for data
+        data_cont = Frame(self, height=HEIGHT, width=(WIDTH // 2) ,bg=bg)
+        data_cont.grid(row=0, column=1, sticky="snew")
+        # data_cont.pack(side="right")
 
+        # Previous data (READ ONLY)
+        prev_data = Frame(data_cont, bg=bg)
+        prev_data.pack(pady=(4, 0))
 
-    def data_reset(self):
-        self.temp_pr = "None"
-        self.volume_pr = "None"
-        self.pressure_pr = "None"
-        self.insert_prev_data(True)
+        p_info = Label(prev_data, font=ARIAL13 + ("underline",), bg=bg, fg=fg)
+        p_info.grid(row=0, column=0, columnspan=3)
 
+        # New data (CAN BE MODIFIED)
+        new_data = Frame(data_cont, bg=bg)
+        new_data.pack(pady=(4, 0))
 
-    def set_main_lang(self):
+        n_info = Label(new_data, font=ARIAL13 + ("underline",), bg=bg, fg=fg)
+        n_info.grid(row=0, column=0, columnspan=3)
+
+        validator = (
+            parent.register(self.__validator),
+            "%W",
+            "%P",
+        )  # widget name, value
+
+        # Temperature (t)
+        # Previous
+        big_t_pd = Label(prev_data, text="T", font=ARIAL13, bg=bg, fg=fg)
+        big_t_pd.grid(row=1, column=0, sticky="nsew")
+        prev_t = Entry(
+            prev_data,
+            width=10,
+            cursor="",
+            justify="center",
+            disabledbackground=bg,
+            highlightbackground=entry_border,
+            disabledforeground=fg,
+            state="disabled",
+            font=ARIAL13,
+            bd=0,
+        )
+        prev_t.grid(row=2, column=0, pady=2, padx=5)
+        # New
+        big_t_nd = Label(new_data, text="T", font=ARIAL13, bg=bg, fg=fg)
+        big_t_nd.grid(row=1, column=0, sticky="nsew")
+        new_t = Entry(
+            new_data,
+            width=10,
+            bg=entry_bg,
+            justify="center",
+            validatecommand=validator,
+            highlightbackground=entry_border,
+            disabledforeground=dis_fg,
+            disabledbackground=bg,
+            validate="key",
+            font=ARIAL13,
+            fg=fg,
+            bd=0,
+        )
+        new_t.grid(row=2, column=0, pady=2, padx=5)
+
+        # Volume (v)
+        # Previous
+        big_v_pd = Label(prev_data, text="V", font=ARIAL13, bg=bg, fg=fg)
+        big_v_pd.grid(row=1, column=1, sticky="nsew")
+        prev_v = Entry(
+            prev_data,
+            width=10,
+            cursor="",
+            justify="center",
+            disabledbackground=bg,
+            highlightbackground=entry_border,
+            disabledforeground=fg,
+            state="disabled",
+            font=ARIAL13,
+            bd=0,
+        )
+        prev_v.grid(row=2, column=1, pady=2, padx=5)
+        # New
+        big_v_nd = Label(new_data, text="V", font=ARIAL13, bg=bg, fg=fg)
+        big_v_nd.grid(row=1, column=1, sticky="nsew")
+        new_v = Entry(
+            new_data,
+            width=10,
+            bg=entry_bg,
+            justify="center",
+            validatecommand=validator,
+            highlightbackground=entry_border,
+            disabledforeground=dis_fg,
+            disabledbackground=bg,
+            validate="key",
+            font=ARIAL13,
+            fg=fg,
+            bd=0,
+        )
+        new_v.grid(row=2, column=1, pady=2, padx=5)
+
+        # Pressure (p)
+        # Previous
+        big_p_pd = Label(prev_data, text="P", font=ARIAL13, bg=bg, fg=fg)
+        big_p_pd.grid(row=1, column=2, sticky="nsew")
+        prev_p = Entry(
+            prev_data,
+            width=10,
+            cursor="",
+            justify="center",
+            disabledbackground=bg,
+            highlightbackground=entry_border,
+            disabledforeground=fg,
+            state="disabled",
+            font=ARIAL13,
+            bd=0,
+        )
+        prev_p.grid(row=2, column=2, pady=2, padx=5)
+        # New
+        big_p_nd = Label(new_data, text="P", font=ARIAL13, bg=bg, fg=fg)
+        big_p_nd.grid(row=1, column=2, sticky="nsew")
+        new_p = Entry(
+            new_data,
+            width=10,
+            bg=entry_bg,
+            justify="center",
+            validatecommand=validator,
+            highlightbackground=entry_border,
+            disabledforeground=dis_fg,
+            disabledbackground=bg,
+            validate="key",
+            font=ARIAL13,
+            fg=fg,
+            bd=0,
+        )
+        new_p.grid(row=2, column=2, pady=2, padx=5)
+
+        def decrease():
+            global degree_of_freedom
+
+            if gas_atoms.cget("text") == "3+":
+                increase_btn.config(state="normal", bg=btn_normal_bg)
+                gas_atoms.config(text="3")
+
+            gas_atoms.config(text=f"{int(gas_atoms.cget('text'))-1}")
+
+            match int(gas_atoms.cget("text")):
+                case 1:
+                    degree_of_freedom = 3
+                case 2:
+                    degree_of_freedom = 5
+                case 3:
+                    degree_of_freedom = 6
+
+            if gas_atoms.cget("text") == "1":
+                decrease_btn.config(state="disabled", bg=bg)
+
+        def increase():
+            global degree_of_freedom
+
+            if gas_atoms.cget("text") == "1":
+                decrease_btn.config(state="normal", bg=btn_normal_bg)
+            gas_atoms.config(text=f"{int(gas_atoms.cget('text'))+1}")
+
+            match int(gas_atoms.cget("text")):
+                case 1:
+                    degree_of_freedom = 3
+                case 2:
+                    degree_of_freedom = 5
+                case 3:
+                    degree_of_freedom = 6
+
+            if gas_atoms.cget("text") == "3":
+                increase_btn.config(state="disabled", bg=bg)
+                gas_atoms.config(text="3+")
+
+        gas_cont = Frame(data_cont, bg=bg)
+        gas_cont.pack(pady=(5, 0))
+
+        gas_info = Label(gas_cont, font=ARIAL13, fg=fg, bg=bg)
+        gas_info.grid(row=0, column=0)
+
+        minus = ImageTk.PhotoImage(Image.open("images/remove.png").resize((25, 25)))
+        decrease_btn = Button(
+            gas_cont,
+            image=minus,
+            height=25,
+            bd=0,
+            bg=bg,
+            activebackground=btn_active_bg,
+            command=decrease,
+            cursor="hand2",
+            state="disabled",
+        )
+        decrease_btn.image = minus
+        decrease_btn.grid(row=0, column=1)
+
+        gas_atoms = Label(
+            gas_cont, font=ARIAL13, justify="center", width=4, fg=fg, bg=bg, text="1"
+        )
+        gas_atoms.grid(row=0, column=2)
+
+        plus = ImageTk.PhotoImage(Image.open("images/add.png").resize((25, 25)))
+        increase_btn = Button(
+            gas_cont,
+            image=plus,
+            height=25,
+            bd=0,
+            bg=btn_normal_bg,
+            activebackground=btn_active_bg,
+            command=increase,
+            cursor="hand2",
+        )
+        increase_btn.image = plus
+        increase_btn.grid(row=0, column=3)
+
+        def set_process(name: str):
+            global current_process
+            if not current_process:
+                print("Nope")
+                check_data_btn.config(state="normal", cursor="hand2")
+                add_dot_btn.config(state="normal", cursor="hand2")
+                refresh_graph_bnt.config(state='normal', cursor="hand2")
+                del_prev_btn.config(state="normal", cursor="hand2")
+                clear_graph_btn.config(state="normal", cursor="hand2")
+            match name:
+                case "Isochoric" | "Изохорный":
+                    # isochoric
+                    # Button statuses
+                    match current_language:
+                        case "eng":
+                            chosen_process['menu'].entryconfigure("Isochoric", state = "disabled")
+                            chosen_process['menu'].entryconfigure("Isotherm", state = "normal")
+                            chosen_process['menu'].entryconfigure("Isobaric", state = "normal")
+                            chosen_process['menu'].entryconfigure("Adiabatic", state = "normal")
+                            chosen_process['menu'].entryconfigure("Polytropic", state = "normal")
+                        case "rus":
+                            chosen_process['menu'].entryconfigure("Изохорный", state = "disabled")
+                            chosen_process['menu'].entryconfigure("Изотермический", state = "normal")
+                            chosen_process['menu'].entryconfigure("Изобарный", state = "normal")
+                            chosen_process['menu'].entryconfigure("Адиабатный", state = "normal")
+                            chosen_process['menu'].entryconfigure("Политропный", state = "normal")
+                    # Entries statuses
+                    new_t.config(state="normal", cursor="xterm")
+                    new_v.config(state="disabled")
+                    new_p.config(state="normal", cursor="xterm")
+                    current_process = 1
+                case "Isotherm" | "Изотермический":
+                    # isotherm
+                    # Button statuses
+                    match current_language:
+                        case "eng":
+                            chosen_process['menu'].entryconfigure("Isochoric", state = "normal")
+                            chosen_process['menu'].entryconfigure("Isotherm", state = "disabled")
+                            chosen_process['menu'].entryconfigure("Isobaric", state = "normal")
+                            chosen_process['menu'].entryconfigure("Adiabatic", state = "normal")
+                            chosen_process['menu'].entryconfigure("Polytropic", state = "normal")
+                        case "rus":
+                            chosen_process['menu'].entryconfigure("Изохорный", state = "normal")
+                            chosen_process['menu'].entryconfigure("Изотермический", state = "disabled")
+                            chosen_process['menu'].entryconfigure("Изобарный", state = "normal")
+                            chosen_process['menu'].entryconfigure("Адиабатный", state = "normal")
+                            chosen_process['menu'].entryconfigure("Политропный", state = "normal")
+                    # Entries statuses
+                    new_t.config(state="disabled")
+                    new_v.config(state="normal", cursor="xterm")
+                    new_p.config(state="normal", cursor="xterm")
+                    current_process = 2
+                case "Isobaric" | "Изобарный":
+                    # isobaric
+                    # Button statuses
+                    match current_language:
+                        case "eng":
+                            chosen_process['menu'].entryconfigure("Isochoric", state = "normal")
+                            chosen_process['menu'].entryconfigure("Isotherm", state = "normal")
+                            chosen_process['menu'].entryconfigure("Isobaric", state = "disabled")
+                            chosen_process['menu'].entryconfigure("Adiabatic", state = "normal")
+                            chosen_process['menu'].entryconfigure("Polytropic", state = "normal")
+                        case "rus":
+                            chosen_process['menu'].entryconfigure("Изохорный", state = "normal")
+                            chosen_process['menu'].entryconfigure("Изотермический", state = "normal")
+                            chosen_process['menu'].entryconfigure("Изобарный", state = "disabled")
+                            chosen_process['menu'].entryconfigure("Адиабатный", state = "normal")
+                            chosen_process['menu'].entryconfigure("Политропный", state = "normal")
+                    # Entries statuses
+                    new_t.config(state="normal", cursor="xterm")
+                    new_v.config(state="normal", cursor="xterm")
+                    new_p.config(state="disabled")
+                    current_process = 3
+                case "Adiabatic" | "Адиабатный":
+                    # adiabatic
+                    # Button statuses
+                    match current_language:
+                        case "eng":
+                            chosen_process['menu'].entryconfigure("Isochoric", state = "normal")
+                            chosen_process['menu'].entryconfigure("Isotherm", state = "normal")
+                            chosen_process['menu'].entryconfigure("Isobaric", state = "normal")
+                            chosen_process['menu'].entryconfigure("Adiabatic", state = "disabled")
+                            chosen_process['menu'].entryconfigure("Polytropic", state = "normal")
+                        case "rus":
+                            chosen_process['menu'].entryconfigure("Изохорный", state = "normal")
+                            chosen_process['menu'].entryconfigure("Изотермический", state = "normal")
+                            chosen_process['menu'].entryconfigure("Изобарный", state = "normal")
+                            chosen_process['menu'].entryconfigure("Адиабатный", state = "disabled")
+                            chosen_process['menu'].entryconfigure("Политропный", state = "normal")
+                    # Entries statuses
+                    new_t.config(state="normal", cursor="xterm")
+                    new_v.config(state="normal", cursor="xterm")
+                    new_p.config(state="normal", cursor="xterm")
+                    current_process = 4
+                case "Polytropic" | "Политропный":
+                    # polytropic
+                    # Button statuses
+                    match current_language:
+                        case "eng":
+                            chosen_process['menu'].entryconfigure("Isochoric", state = "normal")
+                            chosen_process['menu'].entryconfigure("Isotherm", state = "normal")
+                            chosen_process['menu'].entryconfigure("Isobaric", state = "normal")
+                            chosen_process['menu'].entryconfigure("Adiabatic", state = "normal")
+                            chosen_process['menu'].entryconfigure("Polytropic", state = "disabled")
+                        case "rus":
+                            chosen_process['menu'].entryconfigure("Изохорный", state = "normal")
+                            chosen_process['menu'].entryconfigure("Изотермический", state = "normal")
+                            chosen_process['menu'].entryconfigure("Изобарный", state = "normal")
+                            chosen_process['menu'].entryconfigure("Адиабатный", state = "normal")
+                            chosen_process['menu'].entryconfigure("Политропный", state = "disabled")
+                    # Entries statuses
+                    new_t.config(state="normal", cursor="xterm")
+                    new_v.config(state="normal", cursor="xterm")
+                    new_p.config(state="normal", cursor="xterm")
+                    current_process = 5
+                case _:
+                    if isinstance(name, str):
+                        raise ValueError(f'Got unsupported value -> "{name}".')
+                    else:
+                        raise TypeError(f'Expected <str> but got "{type(name)}".')
+
+        process_cont = Frame(data_cont, bg=bg)
+        process_cont.pack(pady=(5, 0))
+
+        process_info = Label(process_cont, font=ARIAL13 + ("underline",), bg=bg, fg=fg)
+        process_info.grid(row=0, column=0, padx=(0, 10))
+
+        self.process_var = StringVar()
+
+        match current_language:
+            case "eng":
+                processes = ["Isochoric", "Isotherm", "Isobaric", "Adiabatic", "Polytropic"]
+            case "rus":
+                processes = ["Изохорный", "Изотермический", "Изобарный", "Адиабатный", "Политропный"]
+            case _:
+                raise ValueError(f"Unsupported language '{current_language}'")
+
+        chosen_process = OptionMenu(process_cont, self.process_var, *processes, command=set_process)
+        chosen_process.config(font=ARIAL13, fg=fg, bg=btn_normal_bg, activebackground=btn_active_bg, bd=0, justify="center", indicatoron=False, state="disabled")
+        chosen_process["menu"].config(font=ARIAL13, fg=fg, bg=btn_normal_bg, activebackground=btn_active_bg, bd=0)
+        chosen_process.grid(row=0, column=1, sticky="nsew")
+
+        # Functional buttons
+
+        func_btn_cont = Frame(data_cont, bg=bg)
+        func_btn_cont.pack(pady=(35, 0))
+
+        def begin():
+            print("Here we GO")
+
+        def check_data():
+            if blocked_entries:
+                print("data is here")
+            print("Data checked")
+
+        def add_dot():
+            if blocked_entries:
+                print("data is here")
+            else:
+                match current_language:
+                    case "rus":
+                        msg = "До добавления новой точки необходимо ввести данные."
+                    case "eng":
+                        msg = "Before adding new dot you need to enter data."
+                showinfo("Info -- no data", msg)
+            print("Added new dot")
+
+        def refresh_graph():
+            if data:
+                ax.clear()
+                match current_graph:
+                    case 0:
+                        ax.set_title("P(V)")
+                        ax.set_ylabel("P")
+                        ax.set_xlabel("V")
+                        values = np.arange(0, 100.001, 0.001)
+                        ax.plot(values, (np.sqrt(values) * (2 ** np.cos(values))))
+                    case 1:
+                        ax.set_title("P(T)")
+                        ax.set_ylabel("P")
+                        ax.set_xlabel("T")
+                        values = np.arange(0, 200.001, 0.001)
+                        ax.plot(values, ((values/2) ** 2 * (2 ** np.sin(values))))
+                    case 2:
+                        ax.set_title("V(T)")
+                        ax.set_ylabel("V")
+                        ax.set_xlabel("T")
+                        values = np.arange(0, (10 * np.pi) + 0.001, 0.001)
+                        ax.plot(values, (-np.sqrt(values[::-1]))+(np.sqrt(values)))
+                canvas.draw()
+            else:
+                match current_language:
+                    case "rus":
+                        msg =  "Перед перерисовкой графика необходимо ввести данные."
+                    case "eng":
+                        msg = "Before refreshing graph you need to enter data."
+                showinfo("Info -- no data", msg)
+
+        def del_prev_dot():
+            if data:
+                print("Deleted previous dot")
+            else:
+                match current_language:
+                    case "rus":
+                        msg = "До удаления предыдущей точки необходимо ввести данные."
+                    case "eng":
+                        msg = "Before removing previus dot you need to enter data."
+                showinfo("Info -- no data", msg)
+
+        def clear_graph():
+            global data
+            if data:
+                ax.clear()
+                match current_graph:
+                    case 0:
+                        ax.set_title("P(V)")
+                        ax.set_ylabel("P")
+                        ax.set_xlabel("V")
+                    case 1:
+                        ax.set_title("P(T)")
+                        ax.set_ylabel("P")
+                        ax.set_xlabel("T")
+                    case 2:
+                        ax.set_title("V(T)")
+                        ax.set_ylabel("V")
+                        ax.set_xlabel("T")
+                data = []
+                canvas.draw()
+                match current_language:
+                    case "rus":
+                        msg = "График и все точки удалёны."
+                    case "eng":
+                        msg = "Graph and all dots are deleted."
+                showinfo("Info -- graph deleted", msg)
+            else:
+                match current_language:
+                    case "rus":
+                        msg = "До очистки графика необходимо ввести данные."
+                    case "eng":
+                        msg = "Before clearing graph you need to enter data."
+                showinfo("Info -- no data", msg)
+
+        begin_btn = Button(func_btn_cont, bd=0, font=ARIAL13, width=30, fg=fg, bg=btn_normal_bg, activebackground=btn_active_bg, activeforeground=fg, disabledforeground=dis_fg, cursor="hand2", command=begin)
+        begin_btn.pack()
+
+        check_data_btn = Button(func_btn_cont, bd=0, font=ARIAL13, width=30, bg=btn_normal_bg, fg=fg, activeforeground=fg, activebackground=btn_active_bg, disabledforeground=dis_fg, cursor="hand2", command=check_data)
+        check_data_btn.pack(pady=(10, 0))
+
+        add_dot_btn = Button(func_btn_cont, bd=0, font=ARIAL13, width=30, bg=btn_normal_bg, fg=fg, activeforeground=fg, activebackground=btn_active_bg, disabledforeground=dis_fg, cursor="hand2", command=add_dot)
+        add_dot_btn.pack(pady=(15, 0))
+
+        refresh_graph_bnt = Button(func_btn_cont, bd=0, font=ARIAL13, width=30, bg=btn_normal_bg, fg=fg, activeforeground=fg, activebackground=btn_active_bg, disabledforeground=dis_fg, cursor="hand2", command=refresh_graph)
+        refresh_graph_bnt.pack(pady=(5, 0))
+
+        del_prev_btn = Button(func_btn_cont, bd=0, font=ARIAL13, width=30, bg=btn_normal_bg, fg=fg, activeforeground=fg, activebackground=btn_active_bg, disabledforeground=dis_fg, cursor="hand2", command=del_prev_dot)
+        del_prev_btn.pack(pady=(20, 0))
+
+        clear_graph_btn = Button(func_btn_cont, bd=0, font=ARIAL13, width=30, bg=btn_normal_bg, fg=fg, activeforeground=fg, activebackground=btn_active_bg, disabledforeground=dis_fg, cursor="hand2", command=clear_graph)
+        clear_graph_btn.pack(pady=(5, 0))
+
+        match current_process:
+            case False:
+                new_t.config(state="disabled", cursor="")
+                new_v.config(state="disabled", cursor="")
+                new_p.config(state="disabled", cursor="")
+                check_data_btn.config(state="disabled", cursor="")
+                add_dot_btn.config(state="disabled", cursor="")
+                refresh_graph_bnt.config(state='disabled', cursor="")
+                del_prev_btn.config(state="disabled", cursor="")
+                clear_graph_btn.config(state="disabled", cursor="")
+            case _:
+                raise ValueError("There is NO default process!")
+
+        # Variables -> attributes, to call from methods and other pages
+        # Containers
+        self.graph_cont = graph_cont
+        self.data_cont = data_cont
+        self.prev_data = prev_data
+        self.new_data = new_data
+        self.gas_cont = gas_cont
+        self.process_cont = process_cont
+        self.func_btn_cont = func_btn_cont
+        # Info labels
+        self.gc_info = gc_info
+        self.p_info = p_info
+        self.n_info = n_info
+        self.gas_info = gas_info
+        self.process_info = process_info
+        # Big letters
+        self.big_t_nd = big_t_nd
+        self.big_t_pd = big_t_pd
+        self.big_v_nd = big_v_nd
+        self.big_v_pd = big_v_pd
+        self.big_p_nd = big_p_nd
+        self.big_p_pd = big_p_pd
+        # Entries
+        self.prev_t = prev_t
+        self.new_t = new_t
+        self.prev_v = prev_v
+        self.new_v = new_v
+        self.prev_p = prev_p
+        self.new_p = new_p
+        self.gas_atoms = gas_atoms
+        # Process
+        self.chosen_process = chosen_process
+        # Butttons
+        self.begin_btn = begin_btn
+        self.check_data_btn = check_data_btn
+        self.add_dot_btn = add_dot_btn
+        self.refresh_graph_bnt = refresh_graph_bnt
+        self.del_prev_btn = del_prev_btn
+        self.clear_graph_btn = clear_graph_btn
+
+        self.set_lang_mainpage()  # Setting text based on language
+
+    def set_lang_mainpage(self):
         if current_language == "eng":
-            self.hint = "Click to copy"
             self.p_tip = "Presure, Pascal"
+            self.process_var.set("not chosen")
             self.t_tip = "Temperature, Kelvin"
             self.v_tip = "Volume, cubic metre"
-            self.new_data_i.config(text="New data")
-            self.pr_data_i.config(text="Previous data")
+            self.n_info.config(text="New data:")
+            self.p_info.config(text="Previous data:")
+            self.process_info.config(text="Process:")
+            self.add_dot_btn.config(text="Add new dot")
+            self.begin_btn.config(text="Add first dot")
+            self.gc_info.config(text="Change graph to:")
+            self.check_data_btn.config(text="Check data")
+            self.clear_graph_btn.config(text="Clear graph")
+            self.refresh_graph_bnt.config(text="Refresh graph")
+            self.gas_info.config(text="Amount of atoms in gas: ")
+            self.del_prev_btn.config(text="Delete previous parameter")
         elif current_language == "rus":
-            self.pr_data_i.config(text="Предыдущие данные")
-            self.new_data_i.config(text="Новые данные")
-            self.hint = "Нажми, чтобы скопировать"
+            self.refresh_graph_bnt.config(text="Перерисовать график")
+            self.del_prev_btn.config(text="Удалить предыдущую точку")
+            self.gas_info.config(text="Количество атомов в газе: ")
+            self.begin_btn.config(text="Добавить первую точку")
+            self.check_data_btn.config(text="Проверить данные")
+            self.clear_graph_btn.config(text="Очистить график")
+            self.gc_info.config(text="Изменить график на:")
+            self.add_dot_btn.config(text="Добавить точку")
+            self.p_info.config(text="Предыдущие данные:")
+            self.process_info.config(text="Процесс:")
+            self.n_info.config(text="Новые данные:")
             self.t_tip = "Температура, Кельвин"
             self.p_tip = "Давление, Паскалей"
+            self.process_var.set("не выбран")
             self.v_tip = "Объём, кубометров"
 
-        CreateToolTip(self.tp_v, self.t_tip, 1)
-        CreateToolTip(self.vp_v, self.v_tip, 2)
-        CreateToolTip(self.pp_v, self.p_tip, 3)
-        CreateToolTip(self.tn_v, self.t_tip, 1)
-        CreateToolTip(self.vn_v, self.v_tip, 2)
-        CreateToolTip(self.pn_v, self.p_tip, 3)
+        create_tool_tip(self.big_t_pd, self.t_tip)
+        create_tool_tip(self.big_t_nd, self.t_tip)
+        create_tool_tip(self.big_v_pd, self.v_tip)
+        create_tool_tip(self.big_v_nd, self.v_tip)
+        create_tool_tip(self.big_p_pd, self.p_tip)
+        create_tool_tip(self.big_p_nd, self.p_tip)
 
-        CreateToolTip(self.tn_e, self.t_tip, 4)
-        CreateToolTip(self.vn_e, self.v_tip, 5)
-        CreateToolTip(self.pn_e, self.p_tip, 6)
-        CreateToolTip(self.tp_e, f"{self.t_tip}\n{self.hint}", 4)
-        CreateToolTip(self.vp_e, f"{self.v_tip}\n{self.hint}", 5)
-        CreateToolTip(self.pp_e, f"{self.p_tip}\n{self.hint}", 6)
+        create_tool_tip(self.prev_t, self.t_tip)
+        create_tool_tip(self.prev_v, self.v_tip)
+        create_tool_tip(self.prev_p, self.p_tip)
+        create_tool_tip(self.new_t, self.t_tip)
+        create_tool_tip(self.new_v, self.v_tip)
+        create_tool_tip(self.new_p, self.p_tip)
+
+    def swap_pos_data_graph(self):
+        """Used ONLY from settings menu."""
+        self.graph_cont.grid_forget()
+        self.data_cont.grid_forget()
+
+        match graph_pos:
+            case True:
+                column_g = 0
+                column_d = 1
+            case False:
+                column_g = 1
+                column_d = 0
+            case _:
+                raise TypeError(f'Expected to get boolean type but got "{type(graph_pos)}"')
+
+        self.graph_cont.grid(row=0, column=column_g)
+        self.data_cont.grid(row=0, column=column_d)
+
+    def set_theme_mainpage(self): # ! Called ONLY from set_global_theme
+        print("I should change colors when this ability will be added back. :P")
+
+    def __validator(self, widget_name, value):
+        global blocked_entries
+
+        # Get entry class based on widget's name user is typing in
+        entry = [
+            widget
+            for widget in [self.new_t, self.new_v, self.new_p]
+            if widget_name == str(widget)
+        ][0]
+
+        another_entries: list[Entry] = None # ! Do not change this
+
+        match digits:
+            case 0:
+                allowed = "0123456789"
+            case _:
+                allowed = "0123456789.,"
+
+        # TODO: Create some sort of highlighter when entered value is equals to 0 | Feature
+        # * If digits equals to 0 it works fine
+        # Change font color to red if entered value is equals to 0
+
+        # if value != "" and all(symbol in allowed for symbol in value):
+        #     if any(symbol in ".," for symbol in value) and value.replace(',', '.').count(".") > 0 and digits > 0:
+        #         splited_value = [part for part in value.replace(',', '.').split(".", 1) if part]
+        #         # print(splited_value, "<- list | value ->", value)
+        #     elif digits == 0 and all(symbol in allowed for symbol in value):
+        #         if Decimal(value) == Decimal(0):
+        #             entry.config(fg="#ff0000")
+        #         else:
+        #             entry.config(fg=fg)
+        #     print("".join(value.replace(',', '.').split('.')))#, "from", f"{value[:(value.replace(',', '.').index('.'))]}")
+        #     # entry.config(fg="#ff0000")
+        # elif value.isdigit():
+        #     entry.config(fg=fg)
+        # elif value == "":
+        #     entry.config(fg=fg)
+
+        # Run through list and run function on all elements in that list using generator
+        if value != "" and all(symbol in allowed for symbol in value):
+            another_entries = [widget for widget in [self.new_t, self.new_v, self.new_p]if widget != entry and widget.cget("state") == "normal"]
+            if another_entries:
+                blocked_entries = another_entries
+            [entry.config(state="disabled") for entry in another_entries]
+        elif value == "" and all(symbol in allowed for symbol in value):
+            [entry.config(state="normal") for entry in blocked_entries]
+            blocked_entries = []
+
+        # Entry validation, allowed values
+        if all(symbol in allowed for symbol in value) and (
+            (value.count(".") <= 1 and value.count(",") == 0)
+            or (value.count(",") <= 1 and value.count(".") == 0)
+        ):
+            # limit decimal value to `digits` after dot/comma --> 0.000 | .000 if digits is 3; 0.00 | .00 if digits is 2; 0.0 | .0 if digits is 1; 0 if digits is 0;
+            if "." in value.replace(',', '.'):
+                if len(value[value.replace(',', '.').index(".") + 1 :]) > digits:
+                    return False
+            return True
+        else:
+            return False
 
 
-    def mainpage_theme(self):
-        self.config(bg=bg)
-        self.cont_pr.config(bg=bg)
-        self.cont_new.config(bg=bg)
-        self.left_part.config(bg=bg)
-        self.right_part.config(bg=bg)
-        self.tp_v.config(bg=bg, fg=fg)
-        self.vp_v.config(bg=bg, fg=fg)
-        self.pp_v.config(bg=bg, fg=fg)
-        self.tn_v.config(bg=bg, fg=fg)
-        self.vn_v.config(bg=bg, fg=fg)
-        self.pn_v.config(bg=bg, fg=fg)
-        self.pr_data_i.config(bg=bg, fg=fg)
-        self.new_data_i.config(bg=bg, fg=fg)
-        self.tn_e.config(bg=num_bg, fg=fg, highlightbackground=num_bg)
-        self.vn_e.config(bg=num_bg, fg=fg, highlightbackground=num_bg)
-        self.pn_e.config(bg=num_bg, fg=fg, highlightbackground=num_bg)
-        self.tp_e.config(disabledbackground=num_bg, disabledforeground=fg)
-        self.vp_e.config(disabledbackground=num_bg, disabledforeground=fg)
-        self.pp_e.config(disabledbackground=num_bg, disabledforeground=fg)
+class About(Toplevel):
+    def __init__(self, parent):
+        Toplevel.__init__(self, parent, bg=bg)
+
+        width, height = 200 + 31, 200 # * Do not change "+ 31" for width
+
+        self.transient(parent)
+        self.wait_visibility()
+        self.grab_set()
+        self.geometry(f"{width}x{height}+{(self.winfo_screenwidth() - width) // 2}+{(self.winfo_screenheight() - height) // 2}")
+        self.resizable(0, 0)
+
+        match current_language:
+            case "rus":
+                title = "О приложении"
+                author_title = "Автор:"
+                version_title = "Версия:"
+                license_title = "Лицензия:"
+            case "eng":
+                version_title = "Version:"
+                license_title = "License:"
+                author_title = "Author:"
+                title = "About"
+
+        self.title(title)
+
+        # Title
+        Label(self, bg=bg, fg=fg, font=ARIAL13+("bold",), text=f"{APP_NAME}").pack(pady=(5, 10))
+
+        # Version
+        version_cont = Frame(self, bg=bg)
+        version_cont.pack(pady=(5, 0), padx=(5, 0), fill="x")
+        Label(version_cont, fg=fg, bg=bg, font=ARIAL13, text=version_title).grid(row=0, column=0)
+        Label(version_cont, fg=fg, bg=bg, font=ARIAL13, text=version).grid(row=0, column=1)
+
+        # Author
+        author_cont = Frame(self, bg=bg)
+        author_cont.pack(pady=(5, 0), padx=(5, 0), fill="x")
+        Label(author_cont, fg=fg, bg=bg, font=ARIAL13, text=author_title).grid(row=0, column=0)
+        author = Label(author_cont, bd=0, fg=fg, bg=bg, font=ARIAL13, text=AUTHOR, cursor="hand2")
+        author.grid(row=0, column=1)
+        author.bind("<Enter>", lambda _: author.config(fg="#0000FF", font=ARIAL13+("underline",)))
+        author.bind("<Leave>", lambda _: author.config(fg=fg, font=ARIAL13))
+        author.bind("<1>", lambda _: open_new_tab("https://github.com/TerraBoii"))
+
+        # License
+        license_cont = Frame(self, bg=bg)
+        license_cont.pack(pady=(5, 0), padx=(5, 0), fill="x")
+        Label(license_cont, fg=fg, bg=bg, font=ARIAL13, text=license_title).grid(row=0, column=0)
+        Label(license_cont, fg=fg, bg=bg, font=ARIAL13, text="MIT license").grid(row=0, column=1)
+
+        Button(self, text='OK', font=ARIAL13, bg=btn_normal_bg, fg=fg, activebackground=btn_active_bg, activeforeground=fg, cursor="hand2", command=self.destroy, width=7).pack(side="bottom", pady=(0, 10))
 
 
-class Settings(Frame):
+class Help(Toplevel):
+    def __init__(self, parent):
+        Toplevel.__init__(self, parent, bg=bg)
 
-    def __init__(self, parent, controller):
-        Frame.__init__(self, parent, bg=bg)
-        self.controller = controller
+        width, height = 200 + 31, 200 # * Do not change "+ 31" for width
 
-        # Separator or placeholder
-        self.place_h0 = Label(self, bg=bg, font=('Arial', 25))
-        self.place_h0.pack()
+        self.transient(parent)
+        self.wait_visibility()
+        self.grab_set()
+        self.geometry(f"{width}x{height}+{(self.winfo_screenwidth() - width) // 2}+{(self.winfo_screenheight() - height) // 2}")
+        self.resizable(0, 0)
 
-        self.language_changers_container = Label(self, bg=bg)
-        self.language_changers_container.pack(anchor='n')
+        match current_language:
+            case "rus":
+                title = "Помощь"
+            case "eng":
+                title = "Help"
 
-        self.language_changers_container.rowconfigure(0, weight=1)
-        self.language_changers_container.columnconfigure(0, weight=1)
-        self.language_changers_container.columnconfigure(1, weight=1)
-        self.language_changers_container.columnconfigure(2, weight=1)
+        self.title(title)
 
-        self.language_info = Button(self.language_changers_container, bg=bg, disabledforeground=fg,
-                                    font=("Arial", 35), state='disabled', bd=0, highlightbackground=bg)
-        self.language_info.grid(row=0, column=0, sticky="nsew")
 
-        self.english_lang_btn = Button(self.language_changers_container, text="English", bg=num_bg, fg=num_fg,
-                                       font=("Arial", 35), disabledforeground=num_bg, highlightbackground=num_bg,
-                                       activeforeground=num_active_fg, activebackground=num_bg, bd=0,
-                                       command=lambda: self.language_changer(_lang_="eng"))
-        self.english_lang_btn.grid(row=0, column=1, padx=5)
+class Settings(Toplevel):
+    def __init__(self, parent):
+        Toplevel.__init__(self, parent, bg=bg)
 
-        self.russian_lang_btn = Button(self.language_changers_container, text="Русский", bg=bg, fg=fg,
-                                       font=("Arial", 35), disabledforeground=bg, highlightbackground=bg,
-                                       activeforeground=active_fg, activebackground=bg, bd=0,
-                                       command=lambda: self.language_changer(_lang_="rus"))
-        self.russian_lang_btn.grid(row=0, column=2)
+        width, height = 250 + 31, 250 # * Do not change "+ 31" for width, cuz square shape
 
-        # Separator or placeholder
-        self.place_h1 = Label(self, bg=bg, font=('Arial', 30))
-        self.place_h1.pack()
+        self.transient(parent)
+        self.wait_visibility()
+        self.grab_set()
+        self.geometry(f"{width}x{height}+{(self.winfo_screenwidth() - width) // 2}+{(self.winfo_screenheight() - height) // 2}")
+        self.resizable(0, 0)
 
-        self.themes_changers_container = Label(self, bg=bg)
-        self.themes_changers_container.pack(anchor='n')
+        # Settings title label
+        setting_title = Label(self, bg=bg, fg=fg, font=ARIAL13)
+        setting_title.pack(pady=(12, 0))
 
-        self.themes_changers_container.rowconfigure(0, weight=1)
-        self.themes_changers_container.columnconfigure(0, weight=1)
-        self.themes_changers_container.columnconfigure(1, weight=1)
-        self.themes_changers_container.columnconfigure(2, weight=1)
-        self.themes_changers_container.columnconfigure(3, weight=1)
-        
-        self.theme_info = Label(self.themes_changers_container, bg=bg, fg=fg, font=("Arial", 35))
-        self.theme_info.grid(row=0, column=0, sticky="nsew")
+        # Graph position settings
+        def change_graph_pos(to_pos: str):
+            match to_pos:
+                case "On the right":
+                    ...
+                case "On the left":
+                    ...
+                case "Справа":
+                    ...
+                case "Слева":
+                    ...
 
-        self.dark_theme_btn = Button(self.themes_changers_container, bg=num_bg, fg=num_fg,
-                                     font=("Arial", 35), command=self.change_theme_to_dark, bd=0, highlightbackground=num_bg,
-                                     activeforeground=num_active_fg, activebackground=num_bg, disabledforeground=num_bg)
-        self.dark_theme_btn.grid(row=0, column=1, sticky='nsew', padx=5)
+        graph_pos_var = StringVar()
 
-        self.light_theme_btn = Button(self.themes_changers_container, bg=bg, fg=fg,
-                                      font=("Arial", 35), highlightbackground=bg,
-                                      activeforeground=active_fg, activebackground=bg, bd=0, disabledforeground=bg,
-                                      command=self.change_theme_to_light)
-        self.light_theme_btn.grid(row=0, column=3, sticky='nsew')
+        graph_set_cont = Frame(self, bg=bg)
+        graph_set_cont.pack(pady=(5, 0), fill="x", padx=(5, 0))
 
-        self.place_h2 = Label(self, bg=bg, font=('Arial', 30))
-        self.place_h2.pack()
+        graph_title = Label(graph_set_cont, bg=bg, fg=fg, font=ARIAL13+("underline",))
+        graph_title.grid(row=0, column=0)
 
-        self.update_container = Label(self, bg=bg)
-        self.update_container.pack(anchor="n")
+        match graph_pos, current_language:
+            case True, "eng":
+                graph_pos_options = ["On the right"]
+                graph_pos_var.set("On the left")
+            case False, "eng":
+                graph_pos_options = ["On the left"]
+                graph_pos_var.set("On the right")
+            case True, "rus":
+                graph_pos_options = ["Справа"]
+                graph_pos_var.set("Слева")
+            case False, "rus":
+                graph_pos_options = ["Слева"]
+                graph_pos_var.set("Справа")
 
-        self.update_container.rowconfigure(0, weight=1)
-        self.update_container.columnconfigure(0, weight=1)
-        self.update_container.columnconfigure(1, weight=1)
-        self.update_container.columnconfigure(2, weight=1)
+        choose_graph_pos = OptionMenu(graph_set_cont, graph_pos_var, *graph_pos_options, command=change_graph_pos)
+        choose_graph_pos.config(font=ARIAL13, bd=0, fg=fg, activeforeground=fg, indicatoron=False, bg=btn_normal_bg, activebackground=btn_active_bg, direction="right")
+        choose_graph_pos["menu"].config(font=ARIAL13, bd=0, fg=fg, activeforeground=fg, bg=btn_normal_bg, activebackground=btn_active_bg)
+        choose_graph_pos.grid(row=0, column=1)
 
-        def a_u_state(new_state, button):
-            a_u_state_set(new_state)
-            if button == 0:
-                self.a_update_on.config(state="disabled", cursor="")
-                self.a_update_off.config(state="normal", cursor="hand2")
-            elif button == 1:
-                self.a_update_on.config(state="normal", cursor="hand2")
-                self.a_update_off.config(state="disabled", cursor="")
+        # Change language
+        lang = StringVar()
 
-        self.update_info = Label(self.update_container, bg=bg, fg=fg, font=("Arial", 35))
-        self.update_info.grid(row=0, column=0, sticky="nsew")
+        lang_cont = Frame(self, bg=bg)
+        lang_cont.pack(pady=(5, 0), fill="x", padx=(5, 0))
 
-        self.a_update_on = Button(self.update_container, text="On", bg=num_bg, fg=num_fg, highlightbackground=num_bg, bd=0,
-                                  font=("Arial", 35), command=lambda: a_u_state(1, 0), activebackground=num_bg, activeforeground=num_active_fg,
-                                  disabledforeground=num_bg)
-        self.a_update_on.grid(row=0, column=1, sticky="nsew", padx=5)
+        lang_title = Label(lang_cont, bg=bg, fg=fg, font=ARIAL13+("underline",))
+        lang_title.grid(row=0, column=0)
 
-        self.a_update_off = Button(self.update_container, text="Off", bg=bg, fg=fg, highlightbackground=bg, bd=0,
-                                   font=("Arial", 35), command=lambda: a_u_state(0, 1), activebackground=bg, activeforeground=active_fg,
-                                   disabledforeground=bg)
-        self.a_update_off.grid(row=0, column=2, sticky="nsew") 
+        match current_language:
+            case "rus":
+                lang_options = ["English"]
+                lang.set("Русский")
+            case "eng":
+                lang_options = ["Русский"]
+                lang.set("English")
 
-        if a_u == "True":
-            self.a_update_on.config(state="disabled")
-        elif a_u == "False":
-            self.a_update_off.config(state="disabled")
+        def change_lang(to_lang: str):
+            global current_language
+            match to_lang:
+                case "English":
+                    lang.set("English")
+                    self.set_lang_settings("eng")
+                    choose_lang['menu'].delete(0, 'end')
+                    choose_lang['menu'].add_command(label="Русский", command=lambda: change_lang("Русский"))
+                case "Русский":
+                    lang.set("Русский")
+                    self.set_lang_settings("rus")
+                    choose_lang['menu'].delete(0, 'end')
+                    choose_lang['menu'].add_command(label="English", command=lambda: change_lang("English"))
+                case _:
+                    print(F"What is -> '{to_lang}', {type(to_lang)}")
 
-        # Separator or placeholder
-        self.place_h3 = Label(self, bg=bg, font=('Arial', 20))
-        self.place_h3.pack()
+        choose_lang = OptionMenu(lang_cont, lang, *lang_options, command=change_lang)
+        choose_lang.config(font=ARIAL13, bd=0, fg=fg, activeforeground=fg, indicatoron=False, bg=btn_normal_bg, activebackground=btn_active_bg, direction="right")
+        choose_lang["menu"].config(font=ARIAL13, bd=0, fg=fg, activeforeground=fg, bg=btn_normal_bg, activebackground=btn_active_bg)
+        choose_lang.grid(row=0, column=1)
 
-        self.home_button = Button(self, bg=num_bg, fg=home_btn_fg, font=("Arial", 45),
-                                  activeforeground=home_btn_active_fg, activebackground=num_bg, bd=0,
-                                  disabledforeground=num_bg, command=lambda: self.controller.show_frame(MainPage),
-                                  highlightbackground=num_bg)
-        self.home_button.pack(fill='both', side='bottom', expand=True)
+        # Change theme
+        theme = StringVar()
 
-        # Checking for current theme"", cursor="arrow")
+        theme_cont = Frame(self, bg=bg)
+        theme_cont.pack(pady=(5, 0), fill="x", padx=(5, 0))
 
-        self.bind("<Configure>", lambda params: self.font_changer(params.width))
+        theme_title = Label(theme_cont, bg=bg, fg=fg, font=ARIAL13+("underline",))
+        theme_title.grid(row=0, column=0)
 
-        if current_theme == "light":
-            self.light_theme_btn.config(state="disabled", cursor="")
-            self.dark_theme_btn.config(state="normal", cursor="hand2")
-        elif current_theme == "dark":
-            self.light_theme_btn.config(state="normal", cursor="hand2")
-            self.dark_theme_btn.config(state="disabled", cursor="")
+        match current_language:
+            case "rus":
+                theme_options = ["Dark"]
+                theme.set("Light")
+            case "eng":
+                theme_options = ["Light"]
+                theme.set("Dark")
 
-        if a_u == "True":
-            self.a_update_on.config(state="disabled", cursor="")
-            self.a_update_off.config(state="normal", cursor="hand2")
-        elif a_u == "False":
-            self.a_update_on.config(state="normal", cursor="hand2")
-            self.a_update_off.config(state="disabled", cursor="")
+        def change_theme(to_theme: str):
+            match to_theme:
+                case "Light":
+                    theme.set("Light")
+                    choose_theme['menu'].delete(0, 'end')
+                    choose_theme['menu'].add_command(label="Dark", command=lambda: change_theme("Dark"))
+                case "Dark":
+                    theme.set("Dark")
+                    choose_theme['menu'].delete(0, 'end')
+                    choose_theme['menu'].add_command(label="Light", command=lambda: change_theme("Light"))
+                case _:
+                    print(F"What is -> '{to_theme}', {type(to_theme)}")
+
+        choose_theme = OptionMenu(theme_cont, theme, *theme_options, command=change_theme)
+        choose_theme.config(font=ARIAL13, bd=0, fg=fg, activeforeground=fg, indicatoron=False, bg=btn_normal_bg, activebackground=btn_active_bg, direction="right")
+        choose_theme["menu"].config(font=ARIAL13, bd=0, fg=fg, activeforeground=fg, bg=btn_normal_bg, activebackground=btn_active_bg)
+        choose_theme.grid(row=0, column=1)
+
+        # Bottom buttons
+        def confirm():
+            cancel()
+
+        def cancel():
+            self.destroy()
+
+        btn_cont = Frame(self, bg=bg)
+        btn_cont.pack(side="bottom", pady=(0, 10))
+        confirm_btn = Button(btn_cont, font=ARIAL13, bd=0, bg=btn_normal_bg, fg=fg, activebackground=btn_active_bg, activeforeground=fg, cursor="hand2", command=confirm)
+        confirm_btn.grid(row=0, column=0, padx=(0, 2))
+        cancel_btn = Button(btn_cont, font=ARIAL13, bd=0, bg=btn_normal_bg, fg=fg, activebackground=btn_active_bg, activeforeground=fg, cursor="hand2", command=cancel)
+        cancel_btn.grid(row=0, column=1, padx=(2, 0))
+
+        # Variables -> attributes, to call from methods
+        # Containers
+        self.graph_set_cont = graph_set_cont
+        self.btn_cont = btn_cont
+        self.lang_cont = lang_cont
+        self.theme_cont = theme_cont
+        # Labels
+        self.setting_title = setting_title
+        self.graph_title = graph_title
+        self.lang_title = lang_title
+        self.theme_title = theme_title
+        # Option menus
+        self.choose_graph_pos = choose_graph_pos
+        self.choose_lang = choose_lang
+        self.choose_theme = choose_theme
+        # Buttons
+        self.confirm_btn = confirm_btn
+        self.cancel_btn = cancel_btn
 
         self.set_lang_settings()
 
-    def font_changer(self, width):
-        """Changing font size based on window width"""
-        if width <= 959:
-            self.theme_info.config(font=('Arial', 42))
-            self.home_button.config(font=('Arial', 45))
-            self.dark_theme_btn.config(font=('Arial', 42))
-            self.light_theme_btn.config(font=('Arial', 42))
-        elif 959 < width <= 1160:
-            self.light_theme_btn.config(font=('Arial', 50))
-            self.dark_theme_btn.config(font=('Arial', 50))
-            self.home_button.config(font=('Arial', 55))
-            self.theme_info.config(font=('Arial', 50))
-        elif width > 1160:
-            self.theme_info.config(font=('Arial', 55))
-            self.home_button.config(font=('Arial', 55))
-            self.dark_theme_btn.config(font=('Arial', 55))
-            self.light_theme_btn.config(font=('Arial', 55))
+    def set_lang_settings(self, lang: str = current_language):
+        match lang:
+            case "rus":
+                self.title("Настройки")
+                self.cancel_btn.config(text="Отмена")
+                self.confirm_btn.config(text="Подтвердить")
+                self.setting_title.config(text="Настройки:")
+                self.lang_title.config(text="Текущий язык:")
+                self.theme_title.config(text="Текущая тема:")
+                self.graph_title.config(text="Положение графика:")
+            case "eng":
+                self.lang_title.config(text="Current language:")
+                self.graph_title.config(text="Graph position:")
+                self.theme_title.config(text="Current theme:")
+                self.setting_title.config(text="Settings:")
+                self.confirm_btn.config(text="Confirm")
+                self.cancel_btn.config(text="Cancel")
+                self.title("Settings")
 
-    def language_changer(self, _lang_: str):
-        """Changes language from setting page and fixes its font"""
-        _page = self.controller.get_page(FLaunchPage)  # Getting access to FLaunchPage in oreder to use new_lang method
-        _page.new_lang('', lang=_lang_, _from='')
-        self.font_changer(self.winfo_width())  # Changing font size so everything will fit in the window
-
-    def set_lang_settings(self):
-        if current_language == "eng":
-            self.russian_lang_btn.config(state='normal', cursor="hand2")
-            self.english_lang_btn.config(state='disabled', cursor="")
-            self.update_info.config(text='Auto update:')
-            self.language_info.config(text='Language:')
-            self.light_theme_btn.config(text='Light')
-            self.dark_theme_btn.config(text='Dark')
-            self.theme_info.config(text='Theme:')
-            self.home_button.config(text='Home')
-            self.a_update_off.config(text="Off")
-            self.a_update_on.config(text="On")
-        elif current_language == 'rus':
-            self.a_update_on.config(text="Вкл")
-            self.theme_info.config(text='Тема:')
-            self.home_button.config(text='Назад')
-            self.a_update_off.config(text="Выкл")
-            self.language_info.config(text='Язык:')
-            self.dark_theme_btn.config(text='Тёмная')
-            self.light_theme_btn.config(text='Светлая')
-            self.update_info.config(text="Авто обновление:")
-            self.russian_lang_btn.config(state='disabled', cursor="")
-            self.english_lang_btn.config(state='normal', cursor="hand2")
-        self.font_changer(self.winfo_width())
-
-    def settings_theme_update(self):
+    def set_theme_settings(self): # ! Called ONLY from set_global_theme
         self.config(bg=bg)
-        self.place_h0.config(bg=bg)
-        self.place_h1.config(bg=bg)
-        self.place_h2.config(bg=bg)
-        self.place_h3.config(bg=bg)
-        self.update_container.config(bg=bg)
-        self.theme_info.config(bg=bg, fg=fg)
-        self.update_info.config(bg=bg, fg=fg)
-        self.themes_changers_container.config(bg=bg)
-        self.language_changers_container.config(bg=bg)
-        self.language_info.config(bg=bg, disabledforeground=fg, highlightbackground=bg)
-        self.a_update_off.config(bg=bg, fg=fg, highlightbackground=bg, activebackground=bg, activeforeground=active_fg,
-                                 disabledforeground=bg)
-        self.light_theme_btn.config(bg=bg, fg=fg, activeforeground=active_fg, activebackground=bg, disabledforeground=bg,
-                                    highlightbackground=bg)
-        self.russian_lang_btn.config(bg=bg, fg=fg, disabledforeground=bg, activeforeground=active_fg, activebackground=bg,
-                                     highlightbackground=bg)
-        self.a_update_on.config(bg=num_bg, fg=num_fg, highlightbackground=num_bg, activebackground=num_bg,
-                                activeforeground=num_active_fg, disabledforeground=num_bg)
-        self.dark_theme_btn.config(bg=num_bg, fg=num_fg, activeforeground=num_active_fg, activebackground=num_bg,
-                                   disabledforeground=num_bg, highlightbackground=num_bg)
-        self.english_lang_btn.config(bg=num_bg, fg=num_fg, disabledforeground=num_bg, activeforeground=num_active_fg,
-                                     activebackground=num_bg, highlightbackground=num_bg)
-        self.home_button.config(bg=num_bg, fg=home_btn_fg, activeforeground=home_btn_active_fg, activebackground=num_bg,
-                                disabledforeground=num_bg, highlightbackground=num_bg)
-
-    def pages_update(self):
-        self.settings_theme_update()
-        page = self.controller.get_page(MainPage)
-        page.mainpage_theme()
-
-    def change_theme_to_dark(self):
-        self.light_theme_btn.config(state='normal', cursor="hand2")
-        self.dark_theme_btn.config(state='disabled', cursor="")
-        dark_theme()
-        self.pages_update()
-
-    def change_theme_to_light(self):
-        self.dark_theme_btn.config(state='normal', cursor="hand2")
-        self.light_theme_btn.config(state='disabled', cursor="")
-        light_theme()
-        self.pages_update()
+        # Containers
+        self.graph_set_cont.config(bg=bg)
+        self.btn_cont.config(bg=bg)
+        self.lang_cont.config(bg=bg)
+        self.theme_cont.config(bg=bg)
+        # Labels
+        self.setting_title.config(bg=bg,fg=fg)
+        self.graph_title.config(bg=bg, fg=fg)
+        self.lang_title.config(bg=bg, fg=fg)
+        # Option menus
+        self.choose_graph_pos.config(fg=fg, activeforeground=fg, bg=btn_normal_bg, activebackground=btn_active_bg)
+        self.choose_graph_pos["menu"].config(fg=fg, activeforeground=fg, bg=btn_normal_bg, activebackground=btn_active_bg)
+        self.choose_lang.config(fg=fg, activeforeground=fg, bg=btn_normal_bg, activebackground=btn_active_bg)
+        self.choose_lang["menu"].config(fg=fg, activeforeground=fg, bg=btn_normal_bg, activebackground=btn_active_bg)
+        self.choose_theme.config(fg=fg, activeforeground=fg, bg=btn_normal_bg, activebackground=btn_active_bg)
+        self.choose_theme["menu"].config(fg=fg, activeforeground=fg, bg=btn_normal_bg, activebackground=btn_active_bg)
+        # Buttons
+        self.confirm_btn.config(bg=btn_normal_bg, fg=fg, activebackground=btn_active_bg, activeforeground=fg)
+        self.cancel_btn.config(bg=btn_normal_bg, fg=fg, activebackground=btn_active_bg, activeforeground=fg)
 
 
 if __name__ == "__main__":
