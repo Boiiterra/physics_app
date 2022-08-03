@@ -16,9 +16,9 @@ Isobaric: $\frac{V}{T} = const$
 Isochoric: $\frac{p}{T} = const$
 
 Adiabatic:
-1. &nbsp;&nbsp;&nbsp;$p\times V^\gamma=const$
-2. &nbsp;&nbsp;&nbsp;$TV^{y-1}=const$
-3. &nbsp;&nbsp;&nbsp;$\frac{p^{\gamma-1}}{T^\gamma}=const$ \
+1. &nbsp;&nbsp;&nbsp; $p\times V^\gamma=const$
+2. &nbsp;&nbsp;&nbsp; $TV^{y-1}=const$
+3. &nbsp;&nbsp;&nbsp; $\frac{p^{\gamma-1}}{T^\gamma}=const$ \
 Extra: \
 $\gamma=\frac{C_p}{C_v}>1$, &nbsp;&nbsp; $C_p > C_v$ \
 $C_p=\frac{i+2}{2}R$,&nbsp;&nbsp;&nbsp; $C_v=\frac{i}{2}R$\
