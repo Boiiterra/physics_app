@@ -88,6 +88,16 @@ class MainAppBody(Tk):
         )  # MIddle of the screen
         self.resizable(0, 0)
 
+        def destroy():
+            match current_language:
+                case "rus":
+                    msg = "Вы уверены, что хотите выйти?\nYes -> Да        No -> Нет"
+                case "eng":
+                    msg = "Do you want to exit?"
+            test = askyesno("Exit?", msg)
+            if test:
+                self.destroy()
+
         # Menu bar with help button
         menubar = Menu(self, tearoff=0, bd=1, bg=bg)
         # File submenu
@@ -96,7 +106,7 @@ class MainAppBody(Tk):
         file_menu.add_command(label="Import", background=bg, foreground=fg, activeforeground=fg, activebackground=menu_active_bg, command=lambda: print("Import"))
         file_menu.add_command(label="Clear", background=bg, foreground=fg, activeforeground=fg, activebackground=menu_active_bg, command=lambda: print("Clear"))
         file_menu.add_separator(background=bg)
-        file_menu.add_command(label="Quit", background=bg, foreground=fg, activeforeground=fg, activebackground=menu_active_bg, command=lambda: print("Quit"))
+        file_menu.add_command(label="Quit", background=bg, foreground=fg, activeforeground=fg, activebackground=menu_active_bg, command=destroy)
         menubar.add_cascade(label="File", menu=file_menu, background=bg, foreground=fg, activebackground=menu_active_bg, activeforeground=fg)
         # Edit submenu
         edit_menu = Menu(menubar, tearoff=0)
