@@ -7,7 +7,7 @@ import numpy as np
 from tkinter import Label, Entry, OptionMenu, StringVar, Tk, Frame, Button, Toplevel, Menu
 from random import choice
 
-from tkinter.messagebox import showinfo
+from tkinter.messagebox import askyesno, showinfo
 from webbrowser import open_new_tab
 from PIL import ImageTk, Image
 from decimal import Decimal
