@@ -852,6 +852,8 @@ class MainPage(Frame):
         self.refresh_graph_bnt = refresh_graph_bnt
         self.del_prev_btn = del_prev_btn
         self.clear_graph_btn = clear_graph_btn
+        # Used in NewDotPrompt
+        self.add_dot = add_dot
 
         self.set_lang_mainpage()  # Setting text based on language
 
