@@ -742,7 +742,11 @@ class MainPage(Frame):
 
         def del_prev_dot():
             if data:
-                print("Deleted previous dot")
+                if len(data) == 1:
+                    reset_page()
+                data.pop(-1)
+                refresh_graph(not data)
+                change_prev()
             else:
                 match current_language:
                     case "rus":
