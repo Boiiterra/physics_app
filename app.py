@@ -685,6 +685,48 @@ class MainPage(Frame):
         func_btn_cont = Frame(data_cont, bg=bg)
         func_btn_cont.pack(pady=(35, 0))
 
+        def change_prev(pressure: str = None, volume: str = None, temperature: str = None, insert: bool = False):
+            """To clear prev_* no params needed"""
+            prev_p["state"] = "normal"
+            prev_v["state"] = "normal"
+            prev_t["state"] = "normal"
+            prev_p.delete(0, "end")
+            prev_v.delete(0, "end")
+            prev_t.delete(0, "end")
+            if insert:
+                prev_p.insert(0, pressure)
+                prev_v.insert(0, volume)
+                prev_t.insert(0, temperature)
+            prev_p["state"] = "disabled"
+            prev_v["state"] = "disabled"
+            prev_t["state"] = "disabled"
+
+        def reset_page():
+            global current_process
+            current_process = False
+
+            chosen_process['menu'].entryconfigure("Изотермический", state = "normal")
+            chosen_process['menu'].entryconfigure("Изохорный", state = "normal")
+            chosen_process['menu'].entryconfigure("Изобарный", state = "normal")
+            chosen_process['menu'].entryconfigure("Адиабатный", state = "normal")
+            chosen_process['menu'].entryconfigure("Политропный", state = "normal")
+            match current_language:
+                case "rus":
+                    self.process_var.set("не выбран")
+                case "eng":
+                    self.process_var.set("not chosen")
+            chosen_process["state"] = "disabled"
+
+            new_t.config(state="disabled", cursor="")
+            new_v.config(state="disabled", cursor="")
+            new_p.config(state="disabled", cursor="")
+            begin_btn.config(state="normal", cursor="hand2")
+            check_data_btn.config(state="disabled", cursor="")
+            add_dot_btn.config(state="disabled", cursor="")
+            refresh_graph_bnt.config(state='disabled', cursor="")
+            del_prev_btn.config(state="disabled", cursor="")
+            clear_graph_btn.config(state="disabled", cursor="")
+
         def check_data():
             if blocked_entries:
                 print("data is here")
