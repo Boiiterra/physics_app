@@ -758,22 +758,10 @@ class MainPage(Frame):
         def clear_graph():
             global data
             if data:
-                ax.clear()
-                match current_graph:
-                    case 0:
-                        ax.set_title("P(V)")
-                        ax.set_ylabel("P")
-                        ax.set_xlabel("V")
-                    case 1:
-                        ax.set_title("P(T)")
-                        ax.set_ylabel("P")
-                        ax.set_xlabel("T")
-                    case 2:
-                        ax.set_title("V(T)")
-                        ax.set_ylabel("V")
-                        ax.set_xlabel("T")
+                reset_page()
                 data = []
-                canvas.draw()
+                refresh_graph(not data)
+                change_prev()
                 match current_language:
                     case "rus":
                         msg = "График и все точки удалёны."
