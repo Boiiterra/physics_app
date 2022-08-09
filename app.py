@@ -704,9 +704,9 @@ class MainPage(Frame):
             else:
                 match current_language:
                     case "rus":
-                        msg = "До добавления новой точки необходимо ввести данные."
+                        msg = "Для добавления новой точки необходимо ввести данные."
                     case "eng":
-                        msg = "Before adding new dot you need to enter data."
+                        msg = "For adding new dot you need to enter some data."
                 showinfo("Info -- no data", msg)
             print("Added new dot")
 
