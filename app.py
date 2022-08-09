@@ -709,8 +709,24 @@ class MainPage(Frame):
                         msg = "For adding new dot you need to enter some data."
                 showinfo("Info -- no data", msg)
 
-        def refresh_graph():
-            if data:
+        def refresh_graph(is_empty: bool = False):
+            if is_empty:
+                ax.clear()
+                match current_graph:
+                    case 0:
+                        ax.set_title("P(V)")
+                        ax.set_ylabel("P")
+                        ax.set_xlabel("V")
+                    case 1:
+                        ax.set_title("P(T)")
+                        ax.set_ylabel("P")
+                        ax.set_xlabel("T")
+                    case 2:
+                        ax.set_title("V(T)")
+                        ax.set_ylabel("V")
+                        ax.set_xlabel("T")
+                canvas.draw()
+            elif data:
                 ax.clear()
                 match current_graph:
                     case 0:
