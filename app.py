@@ -708,7 +708,6 @@ class MainPage(Frame):
                     case "eng":
                         msg = "For adding new dot you need to enter some data."
                 showinfo("Info -- no data", msg)
-            print("Added new dot")
 
         def refresh_graph():
             if data:
