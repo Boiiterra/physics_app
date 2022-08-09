@@ -546,7 +546,6 @@ class MainPage(Frame):
         def set_process(name: str):
             global current_process
             if not current_process:
-                print("Nope")
                 check_data_btn.config(state="normal", cursor="hand2")
                 add_dot_btn.config(state="normal", cursor="hand2")
                 refresh_graph_bnt.config(state='normal', cursor="hand2")
