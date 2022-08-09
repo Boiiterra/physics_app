@@ -690,9 +690,6 @@ class MainPage(Frame):
         func_btn_cont = Frame(data_cont, bg=bg)
         func_btn_cont.pack(pady=(35, 0))
 
-        def begin():
-            print("Here we GO")
-
         def check_data():
             if blocked_entries:
                 print("data is here")
@@ -785,7 +782,7 @@ class MainPage(Frame):
                         msg = "Before clearing graph you need to enter data."
                 showinfo("Info -- no data", msg)
 
-        begin_btn = Button(func_btn_cont, bd=0, font=ARIAL13, width=30, fg=fg, bg=btn_normal_bg, activebackground=btn_active_bg, activeforeground=fg, disabledforeground=dis_fg, cursor="hand2", command=begin)
+        begin_btn = Button(func_btn_cont, bd=0, font=ARIAL13, width=30, fg=fg, bg=btn_normal_bg, activebackground=btn_active_bg, activeforeground=fg, disabledforeground=dis_fg, cursor="hand2", command=lambda: NewDotPrompt(self))
         begin_btn.pack()
 
         check_data_btn = Button(func_btn_cont, bd=0, font=ARIAL13, width=30, bg=btn_normal_bg, fg=fg, activeforeground=fg, activebackground=btn_active_bg, disabledforeground=dis_fg, cursor="hand2", command=check_data)
@@ -987,6 +984,194 @@ class MainPage(Frame):
             return True
         else:
             return False
+
+
+class NewDotPrompt(Toplevel):
+    def __init__(self, main_page: MainPage):
+        Toplevel.__init__(self, main_page.master.master, bg=bg)
+
+        width, height = 261, 190
+
+        self.transient(main_page.master.master)
+        self.wait_visibility()
+        self.grab_set()
+        self.geometry(f"{width}x{height}+{(self.winfo_screenwidth() - width) // 2}+{(self.winfo_screenheight() - height) // 2}")
+        self.resizable(0, 0)
+
+        match current_language:
+            case "rus":
+                add_txt = "Добавить"
+                volume_txt = "Объём:"
+                cancel_txt = "Отмена"
+                pressure_txt = "Давление:"
+                title = "Данные первой точки:"
+                temperature_txt = "Температура:"
+                app_title = "Добавить первую точку"
+            case "eng":
+                temperature_txt = "Temperature:"
+                app_title = "Add first dot"
+                pressure_txt = "Pressure:"
+                title = "First dot info:"
+                volume_txt = "Volume:"
+                cancel_txt = "Cancel"
+                add_txt = "Add"
+
+        self.title(app_title)
+
+        # Title
+        Label(self, bg=bg, fg=fg, font=ARIAL13+("underline",), text=title).pack(pady=(5, 10))
+
+        fd_data = Frame(self, bg=bg)
+        fd_data.pack()
+
+        validator = (self.register(self.__validator),"%W", "%P")  # widget_name, value
+
+        temperature_lbl = Label(fd_data, text=temperature_txt, font=ARIAL13, bg=bg, fg=fg)
+        temperature_lbl.grid(row=0, column=0, sticky="nsew")
+        temperature_data = Entry(
+            fd_data,
+            width=10,
+            bg=entry_bg,
+            justify="center",
+            validatecommand=validator,
+            highlightbackground=entry_border,
+            disabledforeground=dis_fg,
+            disabledbackground=bg,
+            validate="key",
+            font=ARIAL13,
+            fg=fg,
+            bd=0,
+        )
+        temperature_data.grid(row=0, column=1, pady=2, padx=5)
+
+        volume_lbl = Label(fd_data, text=volume_txt, font=ARIAL13, bg=bg, fg=fg)
+        volume_lbl.grid(row=1, column=0, sticky="nsew")
+        volume_data = Entry(
+            fd_data,
+            width=10,
+            bg=entry_bg,
+            justify="center",
+            validatecommand=validator,
+            highlightbackground=entry_border,
+            disabledforeground=dis_fg,
+            disabledbackground=bg,
+            validate="key",
+            font=ARIAL13,
+            fg=fg,
+            bd=0,
+        )
+        volume_data.grid(row=1, column=1, pady=2, padx=5)
+
+        pressure_lbl = Label(fd_data, text=pressure_txt, font=ARIAL13, bg=bg, fg=fg)
+        pressure_lbl.grid(row=2, column=0, sticky="nsew")
+        pressure_data = Entry(
+            fd_data,
+            width=10,
+            bg=entry_bg,
+            justify="center",
+            validatecommand=validator,
+            highlightbackground=entry_border,
+            disabledforeground=dis_fg,
+            disabledbackground=bg,
+            validate="key",
+            font=ARIAL13,
+            fg=fg,
+            bd=0,
+        )
+        pressure_data.grid(row=2, column=1, pady=2, padx=5)
+
+        btn_cont = Frame(self)
+        btn_cont.pack(side="bottom", pady=5)
+
+        def add_first_dot(*_data):
+            match current_language:
+                case "rus":
+                    msg = "Обнаружен нуль в данных!"
+                case "eng":
+                    msg = "Zero is found in data!"
+            if 0 < digits < 4:
+                if not Decimal(0) in list(map(Decimal, [el.replace(",", ".") for el in _data])):
+                    main_page.begin_btn.config(state="disabled", cursor="")
+                    main_page.add_dot(True, _data)
+                    self.destroy()
+                else:
+                    showinfo("Info -- zero found", msg)
+            elif digits == 0:
+                if not 0 in list(map(int, _data)):
+                    main_page.begin_btn.config(state="disabled", cursor="")
+                    main_page.add_dot(True, _data)
+                    self.destroy()
+                else:
+                    showinfo("Info -- zero found", msg)
+            else:
+                raise Exception(f"Unknown value for digits -> \"{digits}\"")
+
+        add_btn = Button(btn_cont, text=add_txt, command=lambda: add_first_dot(pressure_data.get(), volume_data.get(), temperature_data.get()), bg=btn_normal_bg, fg=fg, activeforeground=fg, activebackground=btn_active_bg, bd=0, font=ARIAL13, disabledforeground=dis_fg, state="disabled")
+        add_btn.grid(row=0, column=0, padx=10, pady=5)
+        cancel_btn = Button(btn_cont, text=cancel_txt, command=self.destroy, bg=btn_normal_bg, fg=fg, activeforeground=fg, activebackground=btn_active_bg, bd=0, font=ARIAL13)
+        cancel_btn.grid(row=0, column=1, padx=10, pady=5)
+
+        # Used in __validator
+        self.add_btn = add_btn
+        self.entered_data = []
+        self.temperature_data = temperature_data
+        self.volume_data = volume_data
+        self.pressure_data = pressure_data
+
+    def __validator(self, widget_name, value):
+
+        # entry = [widget for widget in [self.temperature_data, self.volume_data, self.pressure_data] if widget_name == str(widget)][0]
+
+        match digits:
+            case 0:
+                allowed = "0123456789"
+            case _:
+                allowed = "0123456789.,"
+
+        # Unlock add_btn
+        if all(symbol in allowed for symbol in value) and len(value) > 0:
+            if not widget_name in self.entered_data:
+                self.entered_data.append(widget_name)
+            if len(self.entered_data) == 3:
+                self.add_btn["state"] = "normal"
+        elif len(value) == 0:
+            self.entered_data = [__entry for __entry in self.entered_data if __entry != widget_name]
+            if len(self.entered_data) < 3:
+                self.add_btn["state"] = "disabled"
+
+        # TODO: Create some sort of highlighter when entered value is equals to 0 | Feature
+        # * If digits equals to 0 it works fine
+        # Change font color to red if entered value is equals to 0
+
+        # if value != "" and all(symbol in allowed for symbol in value):
+        #     if any(symbol in ".," for symbol in value) and value.replace(',', '.').count(".") > 0 and digits > 0:
+        #         splited_value = [part for part in value.replace(',', '.').split(".", 1) if part]
+        #         # print(splited_value, "<- list | value ->", value)
+        #     elif digits == 0 and all(symbol in allowed for symbol in value):
+        #         if Decimal(value) == Decimal(0):
+        #             entry.config(fg="#ff0000")
+        #         else:
+        #             entry.config(fg=fg)
+        #     print("".join(value.replace(',', '.').split('.')))#, "from", f"{value[:(value.replace(',', '.').index('.'))]}")
+        #     # entry.config(fg="#ff0000")
+        # elif value.isdigit():
+        #     entry.config(fg=fg)
+        # elif value == "":
+        #     entry.config(fg=fg)
+
+        # Entry validation, allowed values
+        if all(symbol in allowed for symbol in value) and (
+            (value.count(".") <= 1 and value.count(",") == 0)
+            or (value.count(",") <= 1 and value.count(".") == 0)
+        ):
+            # limit decimal value to `digits` after dot/comma --> 0.000 | .000 if digits is 3; 0.00 | .00 if digits is 2; 0.0 | .0 if digits is 1; 0 if digits is 0;
+            if "." in value.replace(',', '.'):
+                if len(value[value.replace(',', '.').index(".") + 1 :]) > digits:
+                    return False
+            return True
+        else:
+            return False
+
 
 
 class About(Toplevel):
