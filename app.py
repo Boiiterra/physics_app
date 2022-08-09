@@ -717,20 +717,20 @@ class MainPage(Frame):
                         ax.set_title("P(V)")
                         ax.set_ylabel("P")
                         ax.set_xlabel("V")
-                        values = np.arange(0, 100.001, 0.001)
-                        ax.plot(values, (np.sqrt(values) * (2 ** np.cos(values))))
+                        if len(data) == 1:
+                            ax.plot(data[0][2], data[0][1], "bo")
                     case 1:
                         ax.set_title("P(T)")
                         ax.set_ylabel("P")
                         ax.set_xlabel("T")
-                        values = np.arange(0, 200.001, 0.001)
-                        ax.plot(values, ((values/2) ** 2 * (2 ** np.sin(values))))
+                        if len(data) == 1:
+                            ax.plot(data[0][3], data[0][1], "bo")
                     case 2:
                         ax.set_title("V(T)")
                         ax.set_ylabel("V")
                         ax.set_xlabel("T")
-                        values = np.arange(0, (10 * np.pi) + 0.001, 0.001)
-                        ax.plot(values, (-np.sqrt(values[::-1]))+(np.sqrt(values)))
+                        if len(data) == 1:
+                            ax.plot(data[0][3], data[0][2], "bo")
                 canvas.draw()
             else:
                 match current_language:
