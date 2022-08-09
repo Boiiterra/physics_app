@@ -698,9 +698,14 @@ class MainPage(Frame):
                         msg = "Befoure checking data you need to enter it."
                 showinfo("Info -- no data", msg)
 
-        def add_dot():
+        def add_dot(first: bool = False, _data: list[str] = None):
             if blocked_entries:
                 print("data is here")
+            elif first:
+                data.append([None, *_data])
+                chosen_process["state"] = "normal"
+                refresh_graph()
+                change_prev(*_data, True)
             else:
                 match current_language:
                     case "rus":
