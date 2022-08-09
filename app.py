@@ -24,9 +24,9 @@ ARIAL13 = ("Arial", 13)
 
 
 # temp or session variables
-# * data stores [[Process: int, Pressure: int, Volume: int, Temperature: int], ...]; Default/On-launch value -> [] (empty list)
+# * data stores [[Process: int, Pressure: int | decimal, Volume: int | Decimal, Temperature: int | Decimal], ...]; Default/On-launch value -> [] (empty list)
 # ! DO NOT STORE NUMPY NDARRAY IN DATA | DATA STORES ONLY THOSE VALUES THAT ARE ENTERED BY USER
-data: list[list[int]] = []
+data: list[list[int | Decimal]] = []
 temperature: str = "k"  # * ONLY stores: "c" | "f" | "k" ; Default is "k" (c -> Celsius, f -> Fahrenheit, k -> Kelvin)
 # * Only stores two of the "new_*" entries from main_page: needed in validator for iso processes
 blocked_entries: list[Entry] = []
