@@ -550,8 +550,6 @@ class MainPage(Frame):
                 check_data_btn.config(state="normal", cursor="hand2")
                 add_dot_btn.config(state="normal", cursor="hand2")
                 refresh_graph_bnt.config(state='normal', cursor="hand2")
-                del_prev_btn.config(state="normal", cursor="hand2")
-                clear_graph_btn.config(state="normal", cursor="hand2")
             match name:
                 case "Isochoric" | "Изохорный":
                     # isochoric
@@ -1095,6 +1093,8 @@ class NewDotPrompt(Toplevel):
                 if not Decimal(0) in list(map(Decimal, [el.replace(",", ".") for el in _data])):
                     main_page.begin_btn.config(state="disabled", cursor="")
                     main_page.add_dot(True, _data)
+                    main_page.del_prev_btn.config(state="normal", cursor="hand2")                    
+                    main_page.clear_graph_btn.config(state="normal", cursor="hand2")
                     self.destroy()
                 else:
                     showinfo("Info -- zero found", msg)
@@ -1102,6 +1102,8 @@ class NewDotPrompt(Toplevel):
                 if not 0 in list(map(int, _data)):
                     main_page.begin_btn.config(state="disabled", cursor="")
                     main_page.add_dot(True, _data)
+                    main_page.del_prev_btn.config(state="normal", cursor="hand2")                    
+                    main_page.clear_graph_btn.config(state="normal", cursor="hand2")
                     self.destroy()
                 else:
                     showinfo("Info -- zero found", msg)
