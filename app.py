@@ -813,7 +813,7 @@ class MainPage(Frame):
             case _:
                 raise ValueError("There is NO default process!")
 
-        # Variables -> attributes, to call from methods and other pages
+        # Variables -> attributes, to call from methods and other pages, classes
         # Containers
         self.graph_cont = graph_cont
         self.data_cont = data_cont
