@@ -690,7 +690,13 @@ class MainPage(Frame):
         def check_data():
             if blocked_entries:
                 print("data is here")
-            print("Data checked")
+            else:
+                match current_language:
+                    case "rus":
+                        msg = "Перед проверкой данных необходимо их ввести."
+                    case "eng":
+                        msg = "Befoure checking data you need to enter it."
+                showinfo("Info -- no data", msg)
 
         def add_dot():
             if blocked_entries:
