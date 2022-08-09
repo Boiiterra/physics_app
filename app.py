@@ -214,8 +214,8 @@ class MainPage(Frame):
 
                     ax.clear()
                     if data:
-                        values = np.arange(0, (2*np.pi)+0.001, 0.001)
-                        ax.plot(values, -np.cos(values*2))
+                        if len(data) == 1:
+                            ax.plot(data[0][2], data[0][1], "bo")
                     ax.set_title("P(V)")
                     ax.set_ylabel("P")
                     ax.set_xlabel("V")
@@ -229,8 +229,8 @@ class MainPage(Frame):
 
                     ax.clear()
                     if data:
-                        values = np.arange(0, (2*np.pi)+0.001, 0.001)
-                        ax.plot(values, np.cos(values*2))
+                        if len(data) == 1:
+                            ax.plot(data[0][3], data[0][1], "bo")
                     ax.set_title("P(T)")
                     ax.set_ylabel("P")
                     ax.set_xlabel("T")
@@ -244,10 +244,8 @@ class MainPage(Frame):
 
                     ax.clear()
                     if data:
-                        values1 = np.arange(0, (2*np.pi)+0.001, 0.001)
-                        values2 = np.arange(-(2*np.pi), 0.001, 0.001)
-                        values = np.hstack([values1, values2])
-                        ax.plot(values, np.sqrt(np.abs(np.cos(values))))
+                        if len(data) == 1:
+                            ax.plot(data[0][3], data[0][2], "bo")
                     ax.set_title("V(T)")
                     ax.set_ylabel("V")
                     ax.set_xlabel("T")
