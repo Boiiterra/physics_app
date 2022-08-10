@@ -1239,7 +1239,7 @@ class About(Toplevel):
     def __init__(self, parent):
         Toplevel.__init__(self, parent, bg=bg)
 
-        width, height = 200 + 31, 200 # * Do not change "+ 31" for width
+        width, height = 231, 200
 
         self.transient(parent)
         self.wait_visibility()
@@ -1314,7 +1314,7 @@ class Settings(Toplevel):
     def __init__(self, parent):
         Toplevel.__init__(self, parent, bg=bg)
 
-        width, height = 250 + 31, 250 # * Do not change "+ 31" for width, cuz square shape
+        width, height = 281, 250
 
         self.transient(parent)
         self.wait_visibility()
