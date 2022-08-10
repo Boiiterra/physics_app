@@ -17,7 +17,7 @@ Isochoric: $\frac{p}{T} = const$
 
 Adiabatic:
 1. &nbsp;&nbsp;&nbsp; $p\times V^\gamma=const$
-2. &nbsp;&nbsp;&nbsp; $TV^{y-1}=const$
+2. &nbsp;&nbsp;&nbsp; $TV^{\gamma-1}=const$
 3. &nbsp;&nbsp;&nbsp; $\frac{p^{\gamma-1}}{T^\gamma}=const$ \
 Extra: \
 $\gamma=\frac{C_p}{C_v}>1$, &nbsp;&nbsp; $C_p > C_v$ \
