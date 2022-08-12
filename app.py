@@ -1425,8 +1425,8 @@ class Settings(Toplevel):
 
         match current_language:
             case "rus":
-                theme_options = ["Dark"]
-                theme.set("Light")
+                theme_options = ["Тёмная"]
+                theme.set("Светлая")
             case "eng":
                 theme_options = ["Light"]
                 theme.set("Dark")
