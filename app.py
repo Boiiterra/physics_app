@@ -705,16 +705,21 @@ class MainPage(Frame):
             global current_process
             current_process = False
 
-            chosen_process['menu'].entryconfigure("Изотермический", state = "normal")
-            chosen_process['menu'].entryconfigure("Изохорный", state = "normal")
-            chosen_process['menu'].entryconfigure("Изобарный", state = "normal")
-            chosen_process['menu'].entryconfigure("Адиабатный", state = "normal")
-            chosen_process['menu'].entryconfigure("Политропный", state = "normal")
             match current_language:
-                case "rus":
-                    self.process_var.set("не выбран")
                 case "eng":
+                    chosen_process['menu'].entryconfigure("Isochoric", state="normal")
+                    chosen_process['menu'].entryconfigure("Isotherm", state="normal")
+                    chosen_process['menu'].entryconfigure("Isobaric", state="normal")
+                    chosen_process['menu'].entryconfigure("Adiabatic", state="normal")
+                    chosen_process['menu'].entryconfigure("Polytrophic", state="normal")
                     self.process_var.set("not chosen")
+                case "rus":
+                    chosen_process['menu'].entryconfigure("Изохорный", state="normal")
+                    chosen_process['menu'].entryconfigure("Изотермический", state="normal")
+                    chosen_process['menu'].entryconfigure("Изобарный", state="normal")
+                    chosen_process['menu'].entryconfigure("Адиабатный", state="normal")
+                    chosen_process['menu'].entryconfigure("Политропный", state="normal")
+                    self.process_var.set("не выбран")
             chosen_process["state"] = "disabled"
 
             new_t.config(state="disabled", cursor="")
