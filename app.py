@@ -1481,6 +1481,10 @@ class Settings(Toplevel):
         # Buttons
         self.confirm_btn = confirm_btn
         self.cancel_btn = cancel_btn
+        # Variables (*var)
+        self.graph_pos_var = graph_pos_var
+        self.lang = lang
+        self.theme = theme
 
         self.set_lang_settings()
 
