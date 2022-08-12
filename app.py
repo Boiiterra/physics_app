@@ -808,6 +808,12 @@ class MainPage(Frame):
                 data.pop(-1)
                 refresh_graph(not data)
                 change_prev()
+                match current_language:
+                    case "rus":
+                        msg = "Предыдущая точка удалена."
+                    case "eng":
+                        msg = "Previus dot is removed."
+                showinfo("Info -- dot removed", msg)
             else:
                 match current_language:
                     case "rus":
