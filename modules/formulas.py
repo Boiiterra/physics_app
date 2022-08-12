@@ -59,3 +59,11 @@ def iso_therm(
         return (pressure_1 * volume_1) / volume_2
     else:
         raise Exception("You need to enter either pressure_2 or volume_2")
+
+
+def adiabatic():
+    return
+
+
+def polytrophic():
+    return
