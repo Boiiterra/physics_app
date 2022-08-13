@@ -1398,12 +1398,12 @@ class Settings(Toplevel):
             match to_lang:
                 case "English":
                     lang.set("English")
-                    self.set_lang_settings("eng")
+                    self.set_lang_settings("eng", True)
                     choose_lang['menu'].delete(0, 'end')
                     choose_lang['menu'].add_command(label="Русский", command=lambda: change_lang("Русский"))
                 case "Русский":
                     lang.set("Русский")
-                    self.set_lang_settings("rus")
+                    self.set_lang_settings("rus", True)
                     choose_lang['menu'].delete(0, 'end')
                     choose_lang['menu'].add_command(label="English", command=lambda: change_lang("English"))
                 case _:
