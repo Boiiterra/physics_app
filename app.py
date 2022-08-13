@@ -1441,6 +1441,14 @@ class Settings(Toplevel):
                     theme.set("Dark")
                     choose_theme['menu'].delete(0, 'end')
                     choose_theme['menu'].add_command(label="Light", command=lambda: change_theme("Light"))
+                case "Светлая":
+                    theme.set("Светлая")
+                    choose_theme['menu'].delete(0, 'end')
+                    choose_theme['menu'].add_command(label="Тёмная", command=lambda: change_theme("Тёмная"))
+                case "Тёмная":
+                    theme.set("Тёмная")
+                    choose_theme['menu'].delete(0, 'end')
+                    choose_theme['menu'].add_command(label="Светлая", command=lambda: change_theme("Светлая"))
                 case _:
                     print(F"What is -> '{to_theme}', {type(to_theme)}")
 
