@@ -1485,10 +1485,14 @@ class Settings(Toplevel):
         self.graph_pos_var = graph_pos_var
         self.lang = lang
         self.theme = theme
+        # Functions
+        self.change_graph_pos = change_graph_pos
+        self.change_lang = change_lang
+        self.change_theme = change_theme
 
         self.set_lang_settings()
 
-    def set_lang_settings(self, lang: str = current_language):
+    def set_lang_settings(self, lang: str = current_language, preview: bool = False):
         match lang:
             case "rus":
                 self.title("Настройки")
