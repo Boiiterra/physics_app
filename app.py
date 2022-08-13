@@ -1337,6 +1337,10 @@ class Settings(Toplevel):
         setting_title = Label(self, bg=bg, fg=fg, font=ARIAL13)
         setting_title.pack(pady=(12, 0))
 
+        options = {"Справа": False, "Слева": True, "On the right": False, "On the left": True,
+                   "English": "eng", "Русский": "rus",
+                   "Светлая": "light", "Тёмная": "dark", "Light": "light", "Dark": "dark"}
+
         # Graph position settings
         def change_graph_pos(to_pos: str):
             match to_pos:
