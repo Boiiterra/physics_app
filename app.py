@@ -1528,6 +1528,15 @@ class Settings(Toplevel):
                             self.theme.set("Тёмная")
                             self.choose_theme['menu'].delete(0, 'end')
                             self.choose_theme['menu'].add_command(label="Светлая", command=lambda: self.change_theme("Светлая"))
+                    match self.graph_pos_var.get():
+                        case "On the right":
+                            self.graph_pos_var.set("Справа")
+                            self.choose_graph_pos['menu'].delete(0, 'end')
+                            self.choose_graph_pos['menu'].add_command(label="Слева", command=lambda: self.change_graph_pos("Слева"))
+                        case "On the left":
+                            self.graph_pos_var.set("Слева")
+                            self.choose_graph_pos['menu'].delete(0, 'end')
+                            self.choose_graph_pos['menu'].add_command(label="Справа", command=lambda: self.change_graph_pos("Справа"))
             case "eng":
                 self.lang_title.config(text="Current language:")
                 self.graph_title.config(text="Graph position:")
@@ -1546,6 +1555,15 @@ class Settings(Toplevel):
                             self.theme.set("Dark")
                             self.choose_theme['menu'].delete(0, 'end')
                             self.choose_theme['menu'].add_command(label="Light", command=lambda: self.change_theme("Light"))
+                    match self.graph_pos_var.get():
+                        case "Справа":
+                            self.graph_pos_var.set("On the right")
+                            self.choose_graph_pos['menu'].delete(0, 'end')
+                            self.choose_graph_pos['menu'].add_command(label="On the left", command=lambda: self.change_graph_pos("On the left"))
+                        case "Слева":
+                            self.graph_pos_var.set("On the left")
+                            self.choose_graph_pos['menu'].delete(0, 'end')
+                            self.choose_graph_pos['menu'].add_command(label="On the right", command=lambda: self.change_graph_pos("On the right"))
 
     def set_theme_settings(self): # ! Called ONLY from set_global_theme
         self.config(bg=bg)
