@@ -1341,13 +1341,21 @@ class Settings(Toplevel):
         def change_graph_pos(to_pos: str):
             match to_pos:
                 case "On the right":
-                    ...
+                    graph_pos_var.set("On the right")
+                    choose_graph_pos['menu'].delete(0, 'end')
+                    choose_graph_pos['menu'].add_command(label="On the left", command=lambda: change_graph_pos("On the left"))
                 case "On the left":
-                    ...
+                    graph_pos_var.set("On the left")
+                    choose_graph_pos['menu'].delete(0, 'end')
+                    choose_graph_pos['menu'].add_command(label="On the right", command=lambda: change_graph_pos("On the right"))
                 case "Справа":
-                    ...
+                    graph_pos_var.set("Справа")
+                    choose_graph_pos['menu'].delete(0, 'end')
+                    choose_graph_pos['menu'].add_command(label="Слева", command=lambda: change_graph_pos("Слева"))
                 case "Слева":
-                    ...
+                    graph_pos_var.set("Слева")
+                    choose_graph_pos['menu'].delete(0, 'end')
+                    choose_graph_pos['menu'].add_command(label="Справа", command=lambda: change_graph_pos("Справа"))
 
         graph_pos_var = StringVar()
 
