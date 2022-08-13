@@ -1471,6 +1471,16 @@ class Settings(Toplevel):
 
         # Bottom buttons
         def confirm():
+            global graph_pos, current_language, current_theme
+            if graph_pos != options[graph_pos_var.get()]:
+                graph_pos = options[graph_pos_var.get()]
+                parent.get_page(MainPage).swap_pos_data_graph()
+            if current_language != options[lang.get()]:
+                current_language = options[lang.get()]
+                parent.get_page(MainPage).set_lang_mainpage()
+            if current_theme != options[theme.get()]:
+                current_theme = options[theme.get()]
+                parent.get_page(MainPage).set_theme_mainpage()
             cancel()
 
         def cancel():
