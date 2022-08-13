@@ -1519,7 +1519,6 @@ class Settings(Toplevel):
                 self.theme_title.config(text="Текущая тема:")
                 self.graph_title.config(text="Положение графика:")
                 if preview:
-                    print("Called rus")
                     match self.theme.get():
                         case "Light":
                             self.theme.set("Светлая")
@@ -1538,7 +1537,6 @@ class Settings(Toplevel):
                 self.cancel_btn.config(text="Cancel")
                 self.title("Settings")
                 if preview:
-                    print("Called eng")
                     match self.theme.get():
                         case "Светлая":
                             self.theme.set("Light")
