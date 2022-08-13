@@ -550,20 +550,21 @@ class MainPage(Frame):
             match name:
                 case "Isochoric" | "Изохорный":
                     # isochoric
+                    self.process_var.set(name)
                     # Button statuses
                     match current_language:
                         case "eng":
-                            chosen_process['menu'].entryconfigure("Isochoric", state="disabled", cursor="")
-                            chosen_process['menu'].entryconfigure("Isotherm", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Isobaric", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Adiabatic", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Polytrophic", state="normal", cursor="hand2")
+                            chosen_process['menu'].entryconfigure("Isochoric", state="disabled")
+                            chosen_process['menu'].entryconfigure("Isotherm", state="normal")
+                            chosen_process['menu'].entryconfigure("Isobaric", state="normal")
+                            chosen_process['menu'].entryconfigure("Adiabatic", state="normal")
+                            chosen_process['menu'].entryconfigure("Polytrophic", state="normal")
                         case "rus":
-                            chosen_process['menu'].entryconfigure("Изохорный", state="disabled", cursor="")
-                            chosen_process['menu'].entryconfigure("Изотермический", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Изобарный", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Адиабатный", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Политропный", state="normal", cursor="hand2")
+                            chosen_process['menu'].entryconfigure("Изохорный", state="disabled")
+                            chosen_process['menu'].entryconfigure("Изотермический", state="normal")
+                            chosen_process['menu'].entryconfigure("Изобарный", state="normal")
+                            chosen_process['menu'].entryconfigure("Адиабатный", state="normal")
+                            chosen_process['menu'].entryconfigure("Политропный", state="normal")
                     # Entries statuses
                     new_t.config(state="normal", cursor="xterm")
                     new_v.config(state="disabled")
@@ -571,20 +572,21 @@ class MainPage(Frame):
                     current_process = 1
                 case "Isotherm" | "Изотермический":
                     # isotherm
+                    self.process_var.set(name)
                     # Button statuses
                     match current_language:
                         case "eng":
-                            chosen_process['menu'].entryconfigure("Isochoric", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Isotherm", state="disabled", cursor="")
-                            chosen_process['menu'].entryconfigure("Isobaric", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Adiabatic", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Polytrophic", state="normal", cursor="hand2")
+                            chosen_process['menu'].entryconfigure("Isochoric", state="normal")
+                            chosen_process['menu'].entryconfigure("Isotherm", state="disabled")
+                            chosen_process['menu'].entryconfigure("Isobaric", state="normal")
+                            chosen_process['menu'].entryconfigure("Adiabatic", state="normal")
+                            chosen_process['menu'].entryconfigure("Polytrophic", state="normal")
                         case "rus":
-                            chosen_process['menu'].entryconfigure("Изохорный", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Изотермический", state="disabled", cursor="")
-                            chosen_process['menu'].entryconfigure("Изобарный", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Адиабатный", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Политропный", state="normal", cursor="hand2")
+                            chosen_process['menu'].entryconfigure("Изохорный", state="normal")
+                            chosen_process['menu'].entryconfigure("Изотермический", state="disabled")
+                            chosen_process['menu'].entryconfigure("Изобарный", state="normal")
+                            chosen_process['menu'].entryconfigure("Адиабатный", state="normal")
+                            chosen_process['menu'].entryconfigure("Политропный", state="normal")
                     # Entries statuses
                     new_t.config(state="disabled")
                     new_v.config(state="normal", cursor="xterm")
@@ -592,20 +594,21 @@ class MainPage(Frame):
                     current_process = 2
                 case "Isobaric" | "Изобарный":
                     # isobaric
+                    self.process_var.set(name)
                     # Button statuses
                     match current_language:
                         case "eng":
-                            chosen_process['menu'].entryconfigure("Isochoric", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Isotherm", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Isobaric", state="disabled", cursor="")
-                            chosen_process['menu'].entryconfigure("Adiabatic", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Polytrophic", state="normal", cursor="hand2")
+                            chosen_process['menu'].entryconfigure("Isochoric", state="normal")
+                            chosen_process['menu'].entryconfigure("Isotherm", state="normal")
+                            chosen_process['menu'].entryconfigure("Isobaric", state="disabled")
+                            chosen_process['menu'].entryconfigure("Adiabatic", state="normal")
+                            chosen_process['menu'].entryconfigure("Polytrophic", state="normal")
                         case "rus":
-                            chosen_process['menu'].entryconfigure("Изохорный", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Изотермический", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Изобарный", state="disabled", cursor="")
-                            chosen_process['menu'].entryconfigure("Адиабатный", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Политропный", state="normal", cursor="hand2")
+                            chosen_process['menu'].entryconfigure("Изохорный", state="normal")
+                            chosen_process['menu'].entryconfigure("Изотермический", state="normal")
+                            chosen_process['menu'].entryconfigure("Изобарный", state="disabled")
+                            chosen_process['menu'].entryconfigure("Адиабатный", state="normal")
+                            chosen_process['menu'].entryconfigure("Политропный", state="normal")
                     # Entries statuses
                     new_t.config(state="normal", cursor="xterm")
                     new_v.config(state="normal", cursor="xterm")
@@ -613,20 +616,21 @@ class MainPage(Frame):
                     current_process = 3
                 case "Adiabatic" | "Адиабатный":
                     # adiabatic
+                    self.process_var.set(name)
                     # Button statuses
                     match current_language:
                         case "eng":
-                            chosen_process['menu'].entryconfigure("Isochoric", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Isotherm", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Isobaric", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Adiabatic", state="disabled", cursor="")
-                            chosen_process['menu'].entryconfigure("Polytrophic", state="normal", cursor="hand2")
+                            chosen_process['menu'].entryconfigure("Isochoric", state="normal")
+                            chosen_process['menu'].entryconfigure("Isotherm", state="normal")
+                            chosen_process['menu'].entryconfigure("Isobaric", state="normal")
+                            chosen_process['menu'].entryconfigure("Adiabatic", state="disabled")
+                            chosen_process['menu'].entryconfigure("Polytrophic", state="normal")
                         case "rus":
-                            chosen_process['menu'].entryconfigure("Изохорный", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Изотермический", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Изобарный", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Адиабатный", state="disabled", cursor="")
-                            chosen_process['menu'].entryconfigure("Политропный", state="normal", cursor="hand2")
+                            chosen_process['menu'].entryconfigure("Изохорный", state="normal")
+                            chosen_process['menu'].entryconfigure("Изотермический", state="normal")
+                            chosen_process['menu'].entryconfigure("Изобарный", state="normal")
+                            chosen_process['menu'].entryconfigure("Адиабатный", state="disabled")
+                            chosen_process['menu'].entryconfigure("Политропный", state="normal")
                     # Entries statuses
                     new_t.config(state="normal", cursor="xterm")
                     new_v.config(state="normal", cursor="xterm")
@@ -634,20 +638,21 @@ class MainPage(Frame):
                     current_process = 4
                 case "Polytrophic" | "Политропный":
                     # polytrophic
+                    self.process_var.set(name)
                     # Button statuses
                     match current_language:
                         case "eng":
-                            chosen_process['menu'].entryconfigure("Isochoric", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Isotherm", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Isobaric", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Adiabatic", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Polytrophic", state="disabled", cursor="")
+                            chosen_process['menu'].entryconfigure("Isochoric", state="normal")
+                            chosen_process['menu'].entryconfigure("Isotherm", state="normal")
+                            chosen_process['menu'].entryconfigure("Isobaric", state="normal")
+                            chosen_process['menu'].entryconfigure("Adiabatic", state="normal")
+                            chosen_process['menu'].entryconfigure("Polytrophic", state="disabled")
                         case "rus":
-                            chosen_process['menu'].entryconfigure("Изохорный", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Изотермический", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Изобарный", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Адиабатный", state="normal", cursor="hand2")
-                            chosen_process['menu'].entryconfigure("Политропный", state="disabled", cursor="")
+                            chosen_process['menu'].entryconfigure("Изохорный", state="normal")
+                            chosen_process['menu'].entryconfigure("Изотермический", state="normal")
+                            chosen_process['menu'].entryconfigure("Изобарный", state="normal")
+                            chosen_process['menu'].entryconfigure("Адиабатный", state="normal")
+                            chosen_process['menu'].entryconfigure("Политропный", state="disabled")
                     # Entries statuses
                     new_t.config(state="normal", cursor="xterm")
                     new_v.config(state="normal", cursor="xterm")
