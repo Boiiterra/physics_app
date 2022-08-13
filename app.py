@@ -1518,6 +1518,17 @@ class Settings(Toplevel):
                 self.lang_title.config(text="Текущий язык:")
                 self.theme_title.config(text="Текущая тема:")
                 self.graph_title.config(text="Положение графика:")
+                if preview:
+                    print("Called rus")
+                    match self.theme.get():
+                        case "Light":
+                            self.theme.set("Светлая")
+                            self.choose_theme['menu'].delete(0, 'end')
+                            self.choose_theme['menu'].add_command(label="Тёмная", command=lambda: self.change_theme("Тёмная"))
+                        case "Dark":
+                            self.theme.set("Тёмная")
+                            self.choose_theme['menu'].delete(0, 'end')
+                            self.choose_theme['menu'].add_command(label="Светлая", command=lambda: self.change_theme("Светлая"))
             case "eng":
                 self.lang_title.config(text="Current language:")
                 self.graph_title.config(text="Graph position:")
@@ -1526,6 +1537,17 @@ class Settings(Toplevel):
                 self.confirm_btn.config(text="Confirm")
                 self.cancel_btn.config(text="Cancel")
                 self.title("Settings")
+                if preview:
+                    print("Called eng")
+                    match self.theme.get():
+                        case "Светлая":
+                            self.theme.set("Light")
+                            self.choose_theme['menu'].delete(0, 'end')
+                            self.choose_theme['menu'].add_command(label="Dark", command=lambda: self.change_theme("Dark"))
+                        case "Тёмная":
+                            self.theme.set("Dark")
+                            self.choose_theme['menu'].delete(0, 'end')
+                            self.choose_theme['menu'].add_command(label="Light", command=lambda: self.change_theme("Light"))
 
     def set_theme_settings(self): # ! Called ONLY from set_global_theme
         self.config(bg=bg)
