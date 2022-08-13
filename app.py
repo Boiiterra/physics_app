@@ -986,8 +986,8 @@ class MainPage(Frame):
             case _:
                 raise TypeError(f'Expected to get boolean type but got "{type(graph_pos)}"')
 
-        self.graph_cont.grid(row=0, column=column_g)
-        self.data_cont.grid(row=0, column=column_d)
+        self.graph_cont.grid(row=0, column=column_g, sticky="nsew")
+        self.data_cont.grid(row=0, column=column_d, sticky="nsew")
 
     def set_theme_mainpage(self): # ! Called ONLY from set_global_theme
         print("I should change colors when this ability will be added back. :P")
