@@ -920,10 +920,12 @@ class MainPage(Frame):
         self.clear_graph_btn = clear_graph_btn
         # Used in NewDotPrompt
         self.add_dot = add_dot
+        # Used in set_lang_mainpage (Only when lang is changed from settings) 
+        self.set_process = set_process
 
         self.set_lang_mainpage()  # Setting text based on language
 
-    def set_lang_mainpage(self):
+    def set_lang_mainpage(self, changed: bool = False):
         if current_language == "eng":
             self.p_tip = "Presure, Pascal"
             self.process_var.set("not chosen")
@@ -940,6 +942,13 @@ class MainPage(Frame):
             self.refresh_graph_bnt.config(text="Refresh graph")
             self.gas_info.config(text="Amount of atoms in gas: ")
             self.del_prev_btn.config(text="Delete previous parameter")
+            if changed:
+                self.chosen_process['menu'].delete(0, 'end')
+                self.chosen_process['menu'].add_command(label="Isochoric", command=lambda: self.set_process("Isochoric"))
+                self.chosen_process['menu'].add_command(label="Isotherm", command=lambda: self.set_process("Isotherm"))
+                self.chosen_process['menu'].add_command(label="Isobaric", command=lambda: self.set_process("Isobaric"))
+                self.chosen_process['menu'].add_command(label="Adiabatic", command=lambda: self.set_process("Adiabatic"))
+                self.chosen_process['menu'].add_command(label="Polytrophic", command=lambda: self.set_process("Polytrophic"))
         elif current_language == "rus":
             self.refresh_graph_bnt.config(text="Перерисовать график")
             self.del_prev_btn.config(text="Удалить предыдущую точку")
@@ -956,6 +965,13 @@ class MainPage(Frame):
             self.p_tip = "Давление, Паскалей"
             self.process_var.set("не выбран")
             self.v_tip = "Объём, кубометров"
+            if changed:
+                self.chosen_process['menu'].delete(0, 'end')
+                self.chosen_process['menu'].add_command(label="Изохорный", command=lambda: self.set_process("Изохорный"))
+                self.chosen_process['menu'].add_command(label="Изотермический", command=lambda: self.set_process("Изотермический"))
+                self.chosen_process['menu'].add_command(label="Изобарный", command=lambda: self.set_process("Изобарный"))
+                self.chosen_process['menu'].add_command(label="Адиабатный", command=lambda: self.set_process("Адиабатный"))
+                self.chosen_process['menu'].add_command(label="Политропный", command=lambda: self.set_process("Политропный"))
 
         create_tool_tip(self.big_t_pd, self.t_tip)
         create_tool_tip(self.big_t_nd, self.t_tip)
@@ -1477,7 +1493,7 @@ class Settings(Toplevel):
                 parent.get_page(MainPage).swap_pos_data_graph()
             if current_language != options[lang.get()]:
                 current_language = options[lang.get()]
-                parent.get_page(MainPage).set_lang_mainpage()
+                parent.get_page(MainPage).set_lang_mainpage(True)
             if current_theme != options[theme.get()]:
                 current_theme = options[theme.get()]
                 parent.get_page(MainPage).set_theme_mainpage()
