@@ -1543,7 +1543,9 @@ class Settings(Toplevel):
 
         self.set_lang_settings()
 
-    def set_lang_settings(self, lang: str = current_language, preview: bool = False):
+    def set_lang_settings(self, lang: str = None, preview: bool = False):
+        if lang is None:
+            lang = current_language
         match lang:
             case "rus":
                 self.title("Настройки")
@@ -1573,12 +1575,12 @@ class Settings(Toplevel):
                             self.choose_graph_pos['menu'].delete(0, 'end')
                             self.choose_graph_pos['menu'].add_command(label="Справа", command=lambda: self.change_graph_pos("Справа"))
             case "eng":
-                self.lang_title.config(text="Current language:")
-                self.graph_title.config(text="Graph position:")
-                self.theme_title.config(text="Current theme:")
-                self.setting_title.config(text="Settings:")
-                self.confirm_btn.config(text="Confirm")
                 self.cancel_btn.config(text="Cancel")
+                self.confirm_btn.config(text="Confirm")
+                self.setting_title.config(text="Settings:")
+                self.theme_title.config(text="Current theme:")
+                self.graph_title.config(text="Graph position:")
+                self.lang_title.config(text="Current language:")
                 self.title("Settings")
                 if preview:
                     match self.theme.get():
