@@ -1456,11 +1456,17 @@ class Settings(Toplevel):
         theme_title = Label(theme_cont, bg=bg, fg=fg, font=ARIAL13+("underline",))
         theme_title.grid(row=0, column=0)
 
-        match current_language:
-            case "rus":
+        match current_language, current_theme:
+            case "rus", 'light':
                 theme_options = ["Тёмная"]
                 theme.set("Светлая")
-            case "eng":
+            case "eng", "light":
+                theme_options = ["Dark"]
+                theme.set("Light")
+            case "rus", 'dark':
+                theme_options = ["Светлая"]
+                theme.set("Тёмная")
+            case "eng", "dark":
                 theme_options = ["Light"]
                 theme.set("Dark")
 
