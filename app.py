@@ -1320,6 +1320,7 @@ class Help(Toplevel):
 class Settings(Toplevel):
     def __init__(self, parent):
         Toplevel.__init__(self, parent, bg=bg)
+        self.parent = parent
 
         width, height = 281, 250
 
