@@ -795,18 +795,24 @@ class MainPage(Frame):
                         ax.set_xlabel("V")
                         if len(data) == 1:
                             ax.plot(data[0][2], data[0][1], "bo")
+                        else:
+                            ...
                     case 1:
                         ax.set_title("P(T)")
                         ax.set_ylabel("P")
                         ax.set_xlabel("T")
                         if len(data) == 1:
                             ax.plot(data[0][3], data[0][1], "bo")
+                        else:
+                            ...
                     case 2:
                         ax.set_title("V(T)")
                         ax.set_ylabel("V")
                         ax.set_xlabel("T")
                         if len(data) == 1:
                             ax.plot(data[0][3], data[0][2], "bo")
+                        else:
+                            ...
                 canvas.draw()
             else:
                 match current_language:
