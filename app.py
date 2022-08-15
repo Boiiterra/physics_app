@@ -21,6 +21,7 @@ APP_NAME = "Physics app"
 WIDTH = 1000
 HEIGHT = 600
 ARIAL13 = ("Arial", 13)
+DIGITS = 3 # * digits after dot: 3 -> 0.001;
 
 
 # temp or session variables
@@ -33,7 +34,6 @@ blocked_entries: list[Entry] = []
 current_process: int = False  # * Chosen process by user -> isochoric -- 1, isotherm -- 2, isobaric -- 3, adiabatic -- 4 or polytrophic -- 5
 current_graph: int = 0 # * Graph chosen by user -> P(v) -- 0 (default), P(T) -- 1, V(T) -- 2
 degree_of_freedom: int = 3  # * It is number of degree of freedom for atoms in gas, default -> 3 (Monoatomic gas); diatomic -> 5; multi-atomic -> 6
-digits = 3 # * digits after dot (For Decimal values): 3 -> 0.001; 2 -> 0,01; 1 -> 0,1; 0 -> 1; 3 is MAXIMUM (cuz lots of numbers is not good, imho)
 
 
 # * Change only when finished adding new features or fixed something. 
