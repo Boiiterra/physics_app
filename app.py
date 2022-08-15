@@ -1025,25 +1025,16 @@ class MainPage(Frame):
 
         another_entries: list[Entry] = None # ! Do not change this
 
-        match digits:
-            case 0:
-                allowed = "0123456789"
-            case _:
-                allowed = "0123456789.,"
+        allowed = "0123456789.,"
 
         # TODO: Create some sort of highlighter when entered value is equals to 0 | Feature
         # * If digits equals to 0 it works fine
         # Change font color to red if entered value is equals to 0
 
         # if value != "" and all(symbol in allowed for symbol in value):
-        #     if any(symbol in ".," for symbol in value) and value.replace(',', '.').count(".") > 0 and digits > 0:
+        #     if any(symbol in ".," for symbol in value) and value.replace(',', '.').count(".") > 0 and DIGITS > 0:
         #         splited_value = [part for part in value.replace(',', '.').split(".", 1) if part]
         #         # print(splited_value, "<- list | value ->", value)
-        #     elif digits == 0 and all(symbol in allowed for symbol in value):
-        #         if Decimal(value) == Decimal(0):
-        #             entry.config(fg="#ff0000")
-        #         else:
-        #             entry.config(fg=fg)
         #     print("".join(value.replace(',', '.').split('.')))#, "from", f"{value[:(value.replace(',', '.').index('.'))]}")
         #     # entry.config(fg="#ff0000")
         # elif value.isdigit():
@@ -1066,9 +1057,9 @@ class MainPage(Frame):
             (value.count(".") <= 1 and value.count(",") == 0)
             or (value.count(",") <= 1 and value.count(".") == 0)
         ):
-            # limit decimal value to `digits` after dot/comma --> 0.000 | .000 if digits is 3; 0.00 | .00 if digits is 2; 0.0 | .0 if digits is 1; 0 if digits is 0;
+            # limit decimal value to `digits` after dot/comma --> 0.000
             if "." in value.replace(',', '.'):
-                if len(value[value.replace(',', '.').index(".") + 1 :]) > digits:
+                if len(value[value.replace(',', '.').index(".") + 1 :]) > DIGITS:
                     return False
             return True
         else:
@@ -1178,7 +1169,7 @@ class NewDotPrompt(Toplevel):
                     msg = "Обнаружен нуль в данных!"
                 case "eng":
                     msg = "Zero is found in data!"
-            if 0 < digits < 4:
+            if DIGITS == 3: # Check if const is ok
                 if not Decimal(0) in list(map(Decimal, [el.replace(",", ".") for el in _data])):
                     main_page.begin_btn.config(state="disabled", cursor="")
                     main_page.add_dot(True, _data)
@@ -1187,17 +1178,8 @@ class NewDotPrompt(Toplevel):
                     self.destroy()
                 else:
                     showinfo("Info -- zero found", msg)
-            elif digits == 0:
-                if not 0 in list(map(int, _data)):
-                    main_page.begin_btn.config(state="disabled", cursor="")
-                    main_page.add_dot(True, _data)
-                    main_page.del_prev_btn.config(state="normal", cursor="hand2")                    
-                    main_page.clear_graph_btn.config(state="normal", cursor="hand2")
-                    self.destroy()
-                else:
-                    showinfo("Info -- zero found", msg)
             else:
-                raise Exception(f"Unknown value for digits -> \"{digits}\"")
+                raise Exception(f"Unknown value for digits -> \"{DIGITS}\"")
 
         add_btn = Button(btn_cont, text=add_txt, command=lambda: add_first_dot(pressure_data.get(), volume_data.get(), temperature_data.get()), bg=btn_normal_bg, fg=fg, activeforeground=fg, activebackground=btn_active_bg, bd=0, font=ARIAL13, disabledforeground=dis_fg, state="disabled")
         add_btn.grid(row=0, column=0, padx=10, pady=5)
@@ -1215,11 +1197,7 @@ class NewDotPrompt(Toplevel):
 
         # entry = [widget for widget in [self.temperature_data, self.volume_data, self.pressure_data] if widget_name == str(widget)][0]
 
-        match digits:
-            case 0:
-                allowed = "0123456789"
-            case _:
-                allowed = "0123456789.,"
+        allowed = "0123456789.,"
 
         # Unlock add_btn
         if all(symbol in allowed for symbol in value) and len(value) > 0:
@@ -1237,14 +1215,9 @@ class NewDotPrompt(Toplevel):
         # Change font color to red if entered value is equals to 0
 
         # if value != "" and all(symbol in allowed for symbol in value):
-        #     if any(symbol in ".," for symbol in value) and value.replace(',', '.').count(".") > 0 and digits > 0:
+        #     if any(symbol in ".," for symbol in value) and value.replace(',', '.').count(".") > 0 and DIGITS > 0:
         #         splited_value = [part for part in value.replace(',', '.').split(".", 1) if part]
         #         # print(splited_value, "<- list | value ->", value)
-        #     elif digits == 0 and all(symbol in allowed for symbol in value):
-        #         if Decimal(value) == Decimal(0):
-        #             entry.config(fg="#ff0000")
-        #         else:
-        #             entry.config(fg=fg)
         #     print("".join(value.replace(',', '.').split('.')))#, "from", f"{value[:(value.replace(',', '.').index('.'))]}")
         #     # entry.config(fg="#ff0000")
         # elif value.isdigit():
@@ -1257,9 +1230,9 @@ class NewDotPrompt(Toplevel):
             (value.count(".") <= 1 and value.count(",") == 0)
             or (value.count(",") <= 1 and value.count(".") == 0)
         ):
-            # limit decimal value to `digits` after dot/comma --> 0.000 | .000 if digits is 3; 0.00 | .00 if digits is 2; 0.0 | .0 if digits is 1; 0 if digits is 0;
+            # limit decimal value to `digits` after dot/comma --> 0.000
             if "." in value.replace(',', '.'):
-                if len(value[value.replace(',', '.').index(".") + 1 :]) > digits:
+                if len(value[value.replace(',', '.').index(".") + 1 :]) > DIGITS:
                     return False
             return True
         else:
