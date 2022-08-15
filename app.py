@@ -703,7 +703,7 @@ class MainPage(Frame):
             prev_p.delete(0, "end")
             prev_v.delete(0, "end")
             prev_t.delete(0, "end")
-            if insert:
+            if insert and all(data is not None for data in [pressure, volume, temperature]):
                 prev_p.insert(0, pressure)
                 prev_v.insert(0, volume)
                 prev_t.insert(0, temperature)
