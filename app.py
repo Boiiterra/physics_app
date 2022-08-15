@@ -944,7 +944,6 @@ class MainPage(Frame):
     def set_lang_mainpage(self, changed: bool = False):
         if current_language == "eng":
             self.p_tip = "Presure, Pascal"
-            self.process_var.set("not chosen")
             self.t_tip = "Temperature, Kelvin"
             self.v_tip = "Volume, cubic metre"
             self.n_info.config(text="New data:")
@@ -960,11 +959,29 @@ class MainPage(Frame):
             self.del_prev_btn.config(text="Delete previous parameter")
             if changed:
                 self.chosen_process['menu'].delete(0, 'end')
-                self.chosen_process['menu'].add_command(label="Isochoric", command=lambda: self.set_process("Isochoric"))
-                self.chosen_process['menu'].add_command(label="Isotherm", command=lambda: self.set_process("Isotherm"))
-                self.chosen_process['menu'].add_command(label="Isobaric", command=lambda: self.set_process("Isobaric"))
-                self.chosen_process['menu'].add_command(label="Adiabatic", command=lambda: self.set_process("Adiabatic"))
-                self.chosen_process['menu'].add_command(label="Polytrophic", command=lambda: self.set_process("Polytrophic"))
+                match current_process:
+                    case 1:
+                        self.process_var.set("Isotherm")
+                    case 2:
+                        self.process_var.set("Isochoric")
+                    case 3:
+                        self.process_var.set("Isobaric")
+                    case 4:
+                        self.process_var.set("Adiabatic")
+                    case 5:
+                        self.process_var.set("Polytrophic")
+                if current_process != 1:
+                    self.chosen_process['menu'].add_command(label="Isochoric", command=lambda: self.set_process("Isochoric"))
+                if current_process != 2:
+                    self.chosen_process['menu'].add_command(label="Isotherm", command=lambda: self.set_process("Isotherm"))
+                if current_process != 3:
+                    self.chosen_process['menu'].add_command(label="Isobaric", command=lambda: self.set_process("Isobaric"))
+                if current_process != 4:
+                    self.chosen_process['menu'].add_command(label="Adiabatic", command=lambda: self.set_process("Adiabatic"))
+                if current_process != 5:
+                    self.chosen_process['menu'].add_command(label="Polytrophic", command=lambda: self.set_process("Polytrophic"))
+            else:
+                self.process_var.set("not chosen")
         elif current_language == "rus":
             self.refresh_graph_bnt.config(text="Перерисовать график")
             self.del_prev_btn.config(text="Удалить предыдущую точку")
@@ -979,15 +996,32 @@ class MainPage(Frame):
             self.n_info.config(text="Новые данные:")
             self.t_tip = "Температура, Кельвин"
             self.p_tip = "Давление, Паскалей"
-            self.process_var.set("не выбран")
             self.v_tip = "Объём, кубометров"
             if changed:
                 self.chosen_process['menu'].delete(0, 'end')
-                self.chosen_process['menu'].add_command(label="Изохорный", command=lambda: self.set_process("Изохорный"))
-                self.chosen_process['menu'].add_command(label="Изотермический", command=lambda: self.set_process("Изотермический"))
-                self.chosen_process['menu'].add_command(label="Изобарный", command=lambda: self.set_process("Изобарный"))
-                self.chosen_process['menu'].add_command(label="Адиабатный", command=lambda: self.set_process("Адиабатный"))
-                self.chosen_process['menu'].add_command(label="Политропный", command=lambda: self.set_process("Политропный"))
+                match current_process:
+                    case 1:
+                        self.process_var.set("Изохорный")
+                    case 2:
+                        self.process_var.set("Изотермический")
+                    case 3:
+                        self.process_var.set("Изобарный")
+                    case 4:
+                        self.process_var.set("Адиабатный")
+                    case 5:
+                        self.process_var.set("Политропный")
+                if current_process != 1:
+                    self.chosen_process['menu'].add_command(label="Изохорный", command=lambda: self.set_process("Изохорный"))
+                if current_process != 2:
+                    self.chosen_process['menu'].add_command(label="Изотермический", command=lambda: self.set_process("Изотермический"))
+                if current_process != 3:
+                    self.chosen_process['menu'].add_command(label="Изобарный", command=lambda: self.set_process("Изобарный"))
+                if current_process != 4:
+                    self.chosen_process['menu'].add_command(label="Адиабатный", command=lambda: self.set_process("Адиабатный"))
+                if current_process != 5:
+                    self.chosen_process['menu'].add_command(label="Политропный", command=lambda: self.set_process("Политропный"))
+            else:
+                self.process_var.set("не выбран")
 
         create_tool_tip(self.big_t_pd, self.t_tip)
         create_tool_tip(self.big_t_nd, self.t_tip)
