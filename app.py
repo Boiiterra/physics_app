@@ -72,6 +72,11 @@ config_mpl_cmd()
 config_mpl_color(bg, axes_color, grid_color, text_color)
 
 
+def change_theme(new_theme: str):
+    global current_theme
+    current_theme = new_theme
+
+
 class WrongArgument(Exception):
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
@@ -1476,8 +1481,7 @@ class Settings(Toplevel):
                 current_language = options[lang.get()]
                 parent.get_page(MainPage).set_lang_mainpage(True)
             if current_theme != options[theme.get()]:
-                current_theme = options[theme.get()]
-                parent.get_page(MainPage).set_theme_mainpage()
+                self.set_global_theme(options[theme.get()])
             cancel()
 
         def cancel():
@@ -1599,6 +1603,11 @@ class Settings(Toplevel):
         # Buttons
         self.confirm_btn.config(bg=btn_normal_bg, fg=fg, activebackground=btn_active_bg, activeforeground=fg)
         self.cancel_btn.config(bg=btn_normal_bg, fg=fg, activebackground=btn_active_bg, activeforeground=fg)
+
+    def set_global_theme(self, theme):
+        change_theme(theme)
+        self.set_theme_settings()
+        self.parent.get_page(MainPage).set_theme_mainpage()
 
 
 if __name__ == "__main__":
