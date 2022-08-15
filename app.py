@@ -1169,17 +1169,14 @@ class NewDotPrompt(Toplevel):
                     msg = "Обнаружен нуль в данных!"
                 case "eng":
                     msg = "Zero is found in data!"
-            if DIGITS == 3: # Check if const is ok
-                if not Decimal(0) in list(map(Decimal, [el.replace(",", ".") for el in _data])):
-                    main_page.begin_btn.config(state="disabled", cursor="")
-                    main_page.add_dot(True, _data)
-                    main_page.del_prev_btn.config(state="normal", cursor="hand2")                    
-                    main_page.clear_graph_btn.config(state="normal", cursor="hand2")
-                    self.destroy()
-                else:
-                    showinfo("Info -- zero found", msg)
+            if not Decimal(0) in list(map(Decimal, [el.replace(",", ".") for el in _data])):
+                main_page.begin_btn.config(state="disabled", cursor="")
+                main_page.add_dot(True, _data)
+                main_page.del_prev_btn.config(state="normal", cursor="hand2")                    
+                main_page.clear_graph_btn.config(state="normal", cursor="hand2")
+                self.destroy()
             else:
-                raise Exception(f"Unknown value for digits -> \"{DIGITS}\"")
+                showinfo("Info -- zero found", msg)
 
         add_btn = Button(btn_cont, text=add_txt, command=lambda: add_first_dot(pressure_data.get(), volume_data.get(), temperature_data.get()), bg=btn_normal_bg, fg=fg, activeforeground=fg, activebackground=btn_active_bg, bd=0, font=ARIAL13, disabledforeground=dis_fg, state="disabled")
         add_btn.grid(row=0, column=0, padx=10, pady=5)
