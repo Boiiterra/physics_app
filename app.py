@@ -12,7 +12,7 @@ from webbrowser import open_new_tab
 from PIL import ImageTk, Image
 from decimal import Decimal
 
-from modules import create_tool_tip, NavigationToolbar, tmpr_convert
+from modules import create_tool_tip, NavigationToolbar, tmpr_convert, iso_choric, iso_baric, iso_therm
 from config import config_mpl_cmd, config_mpl_color
 
 # const
