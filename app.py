@@ -546,6 +546,14 @@ class MainPage(Frame):
         increase_btn.image = plus
         increase_btn.grid(row=0, column=3)
 
+        def clear_new_data():
+            new_p["state"] = "normal"
+            new_v["state"] = "normal"
+            new_t["state"] = "normal"
+            new_p.delete(0, "end")
+            new_v.delete(0, "end")
+            new_t.delete(0, "end")
+
         def set_process(name: str):
             global current_process
             if not current_process:
@@ -571,6 +579,7 @@ class MainPage(Frame):
                             chosen_process['menu'].entryconfigure("Адиабатный", state="normal")
                             chosen_process['menu'].entryconfigure("Политропный", state="normal")
                     # Entries statuses
+                    clear_new_data()
                     new_t.config(state="normal", cursor="xterm")
                     new_v.config(state="disabled")
                     new_p.config(state="normal", cursor="xterm")
@@ -593,6 +602,7 @@ class MainPage(Frame):
                             chosen_process['menu'].entryconfigure("Адиабатный", state="normal")
                             chosen_process['menu'].entryconfigure("Политропный", state="normal")
                     # Entries statuses
+                    clear_new_data()
                     new_t.config(state="disabled")
                     new_v.config(state="normal", cursor="xterm")
                     new_p.config(state="normal", cursor="xterm")
@@ -615,6 +625,7 @@ class MainPage(Frame):
                             chosen_process['menu'].entryconfigure("Адиабатный", state="normal")
                             chosen_process['menu'].entryconfigure("Политропный", state="normal")
                     # Entries statuses
+                    clear_new_data()
                     new_t.config(state="normal", cursor="xterm")
                     new_v.config(state="normal", cursor="xterm")
                     new_p.config(state="disabled")
@@ -637,6 +648,7 @@ class MainPage(Frame):
                             chosen_process['menu'].entryconfigure("Адиабатный", state="disabled")
                             chosen_process['menu'].entryconfigure("Политропный", state="normal")
                     # Entries statuses
+                    clear_new_data()
                     new_t.config(state="normal", cursor="xterm")
                     new_v.config(state="normal", cursor="xterm")
                     new_p.config(state="normal", cursor="xterm")
@@ -659,6 +671,7 @@ class MainPage(Frame):
                             chosen_process['menu'].entryconfigure("Адиабатный", state="normal")
                             chosen_process['menu'].entryconfigure("Политропный", state="disabled")
                     # Entries statuses
+                    clear_new_data()
                     new_t.config(state="normal", cursor="xterm")
                     new_v.config(state="normal", cursor="xterm")
                     new_p.config(state="normal", cursor="xterm")
