@@ -1283,11 +1283,6 @@ class NewDotPrompt(Toplevel):
         btn_cont.pack(side="bottom", pady=5)
 
         def add_first_dot(*_data):
-            match current_language:
-                case "rus":
-                    msg = "Обнаружен нуль в данных!"
-                case "eng":
-                    msg = "Zero is found in data!"
             if not Decimal(0) in list(map(Decimal, [el.replace(",", ".") for el in _data])):
                 main_page.begin_btn.config(state="disabled", cursor="")
                 main_page.add_dot(True, _data)
@@ -1295,6 +1290,11 @@ class NewDotPrompt(Toplevel):
                 main_page.clear_graph_btn.config(state="normal", cursor="hand2")
                 self.destroy()
             else:
+                match current_language:
+                    case "rus":
+                        msg = "Обнаружен нуль в данных!"
+                    case "eng":
+                        msg = "Zero is found in data!"
                 showinfo("Info -- zero found", msg)
 
         add_btn = Button(btn_cont, text=add_txt, command=lambda: add_first_dot(pressure_data.get(), volume_data.get(), temperature_data.get()), bg=btn_normal_bg, fg=fg, activeforeground=fg, activebackground=btn_active_bg, bd=0, font=ARIAL13, disabledforeground=dis_fg, state="disabled")
