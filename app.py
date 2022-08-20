@@ -1176,20 +1176,20 @@ class MainPage(Frame):
             else:
                 self.process_var.set("not chosen")
         elif current_language == "rus":
-            self.refresh_graph_bnt.config(text="Перерисовать график")
-            self.del_prev_btn.config(text="Удалить предыдущую точку")
-            self.gas_info.config(text="Количество атомов в газе: ")
+            self.v_tip = "Объём, кубометров"
+            self.p_tip = "Давление, Паскалей"
+            self.t_tip = "Температура, Кельвин"
+            self.n_info.config(text="Новые данные:")
+            self.process_info.config(text="Процесс:")
+            self.p_info.config(text="Предыдущие данные:")
+            self.add_dot_btn.config(text="Добавить точку")
+            self.gc_info.config(text="Изменить график на:")
             self.begin_btn.config(text="Добавить первую точку")
             self.check_data_btn.config(text="Проверить данные")
             self.clear_graph_btn.config(text="Очистить график")
-            self.gc_info.config(text="Изменить график на:")
-            self.add_dot_btn.config(text="Добавить точку")
-            self.p_info.config(text="Предыдущие данные:")
-            self.process_info.config(text="Процесс:")
-            self.n_info.config(text="Новые данные:")
-            self.t_tip = "Температура, Кельвин"
-            self.p_tip = "Давление, Паскалей"
-            self.v_tip = "Объём, кубометров"
+            self.gas_info.config(text="Количество атомов в газе: ")
+            self.del_prev_btn.config(text="Удалить предыдущую точку")
+            self.refresh_graph_bnt.config(text="Перерисовать график")
             if changed:
                 self.chosen_process['menu'].delete(0, 'end')
                 match current_process:
