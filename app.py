@@ -1017,9 +1017,11 @@ class MainPage(Frame):
             if data:
                 if len(data) == 1:
                     reset_page()
+                    change_prev()
                 data.pop(-1)
                 refresh_graph(not data)
-                change_prev()
+                if data:
+                    change_prev(data[-1][1], data[-1][2], data[-1][3], True)
                 match current_language:
                     case "rus":
                         msg = "Предыдущая точка удалена."
