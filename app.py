@@ -750,67 +750,88 @@ class MainPage(Frame):
         def check_data():
             if blocked_entries:
                 entry = [widget for widget in [self.new_t, self.new_v, self.new_p] if widget["state"] == "normal"][0]
-                match str(entry)[-1]:
-                    case "y":
-                        match current_process:
-                            case 1:
-                                _temperature = entry.get()
-                                _volume = prev_v.get()
-                                _pressure = Decimal(iso_choric(Decimal(prev_p.get()), Decimal(prev_t.get()), temperature_2=Decimal(entry.get()))).quantize(Decimal('.001'))
-                            case 3:
-                                _temperature = entry.get()
-                                _volume = Decimal(iso_baric(Decimal(prev_t.get()), Decimal(prev_v.get()), temperature_2=Decimal(entry.get()))).quantize(Decimal('.001'))
-                                _pressure = prev_p.get()
-                            case 4:
-                                _temperature = "None"
-                                _volume = "None"
-                                _pressure = "None"
-                            case 5:
-                                _temperature = "None"
-                                _volume = "None"
-                                _pressure = "None"
-                    case "2":
-                        match current_process:
-                            case 2:
-                                _temperature = prev_t.get()
-                                _volume = entry.get()
-                                _pressure = Decimal(iso_therm(Decimal(prev_p.get()), Decimal(prev_v.get()), volume_2=Decimal(entry.get()))).quantize(Decimal('.001'))
-                            case 3:
-                                _temperature = Decimal(iso_baric(Decimal(prev_t.get()), Decimal(prev_v.get()), volume_2=Decimal(entry.get()))).quantize(Decimal('.001'))
-                                _volume = entry.get()
-                                _pressure = prev_p.get()
-                            case 4:
-                                _temperature = "None"
-                                _volume = "None"
-                                _pressure = "None"
-                            case 5:
-                                _temperature = "None"
-                                _volume = "None"
-                                _pressure = "None"
-                    case "3":
-                        match current_process:
-                            case 1:
-                                _temperature = Decimal(iso_choric(Decimal(prev_p.get()), Decimal(prev_t.get()), pressure_2=Decimal(entry.get()))).quantize(Decimal('.001'))
-                                _volume = prev_v.get()
-                                _pressure = entry.get()
-                            case 2:
-                                _temperature = prev_t.get()
-                                _volume = Decimal(iso_therm(Decimal(prev_p.get()), Decimal(prev_v.get()), pressure_2=Decimal(entry.get()))).quantize(Decimal('.001'))
-                                _pressure = entry.get()
-                            case 4:
-                                _temperature = "None"
-                                _volume = "None"
-                                _pressure = "None"
-                            case 5:
-                                _temperature = "None"
-                                _volume = "None"
-                                _pressure = "None"
-                match current_language:
-                    case "rus":
-                        msg = f"Новык данные:\n1. Температура = {_temperature}\n2. Объём = {_volume}\n3. Давление = {_pressure}\n4. Процесс = {processes[current_process - 1]}"
-                    case "eng":
-                        msg = f"New dot info:\n1. Temperature = {_temperature}\n2. Volume = {_volume}\n3. Pressure = {_pressure}\n4. Process = {processes[current_process - 1]}"
-                showinfo("Info -- data", msg)
+                if Decimal(entry.get()) != Decimal(0):
+                    match str(entry)[-1]:
+                        case "y":
+                            match current_process:
+                                case 1:
+                                    _temperature = entry.get()
+                                    _volume = prev_v.get()
+                                    _pressure = Decimal(iso_choric(Decimal(prev_p.get()), Decimal(prev_t.get()), temperature_2=Decimal(entry.get()))).quantize(Decimal('.001'))
+                                    if int(str(_pressure).split(".")[1]) == 0:
+                                        _pressure = str(_pressure).split(".")[0]
+                                case 3:
+                                    _temperature = entry.get()
+                                    _volume = Decimal(iso_baric(Decimal(prev_t.get()), Decimal(prev_v.get()), temperature_2=Decimal(entry.get()))).quantize(Decimal('.001'))
+                                    if int(str(_volume).split(".")[1]) == 0:
+                                        _volume = str(_volume).split(".")[0]
+                                    _pressure = prev_p.get()
+                                case 4:
+                                    _temperature = "None"
+                                    _volume = "None"
+                                    _pressure = "None"
+                                case 5:
+                                    _temperature = "None"
+                                    _volume = "None"
+                                    _pressure = "None"
+                        case "2":
+                            match current_process:
+                                case 2:
+                                    _temperature = prev_t.get()
+                                    _volume = entry.get()
+                                    _pressure = Decimal(iso_therm(Decimal(prev_p.get()), Decimal(prev_v.get()), volume_2=Decimal(entry.get()))).quantize(Decimal('.001'))
+                                    if int(str(_pressure).split(".")[1]) == 0:
+                                        _pressure = str(_pressure).split(".")[0]
+                                case 3:
+                                    _temperature = Decimal(iso_baric(Decimal(prev_t.get()), Decimal(prev_v.get()), volume_2=Decimal(entry.get()))).quantize(Decimal('.001'))
+                                    if int(str(_temperature).split(".")[1]) == 0:
+                                        _temperature = str(_temperature).split(".")[0]
+                                    _volume = entry.get()
+                                    _pressure = prev_p.get()
+                                case 4:
+                                    _temperature = "None"
+                                    _volume = "None"
+                                    _pressure = "None"
+                                case 5:
+                                    _temperature = "None"
+                                    _volume = "None"
+                                    _pressure = "None"
+                        case "3":
+                            match current_process:
+                                case 1:
+                                    _temperature = Decimal(iso_choric(Decimal(prev_p.get()), Decimal(prev_t.get()), pressure_2=Decimal(entry.get()))).quantize(Decimal('.001'))
+                                    if int(str(_temperature).split(".")[1]) == 0:
+                                        _temperature = str(_temperature).split(".")[0]
+                                    _volume = prev_v.get()
+                                    _pressure = entry.get()
+                                case 2:
+                                    _temperature = prev_t.get()
+                                    _volume = Decimal(iso_therm(Decimal(prev_p.get()), Decimal(prev_v.get()), pressure_2=Decimal(entry.get()))).quantize(Decimal('.001'))
+                                    if int(str(_volume).split(".")[1]) == 0:
+                                        _volume = str(_volume).split(".")[0]
+                                    _pressure = entry.get()
+                                case 4:
+                                    _temperature = "None"
+                                    _volume = "None"
+                                    _pressure = "None"
+                                case 5:
+                                    _temperature = "None"
+                                    _volume = "None"
+                                    _pressure = "None"
+                    match current_language:
+                        case "rus":
+                            msg = f"Новык данные:\n1. Температура = {_temperature}\n2. Объём = {_volume}\n3. Давление = {_pressure}\n4. Процесс = {processes[current_process - 1]}"
+                        case "eng":
+                            msg = f"New dot info:\n1. Temperature = {_temperature}\n2. Volume = {_volume}\n3. Pressure = {_pressure}\n4. Process = {processes[current_process - 1]}"
+                    showinfo("Info -- data", msg)
+                else:
+                    entry.delete(0, "end")
+                    match current_language:
+                        case "rus":
+                            msg = "Невозможно добавить нуль."
+                        case "eng":
+                            msg = "It is impossible to add zero."
+                    showinfo("Info -- zero found", msg)
             else:
                 match current_language:
                     case "rus":
