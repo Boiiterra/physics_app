@@ -76,12 +76,6 @@ def change_theme(new_theme: str):
     global current_theme
     current_theme = new_theme
 
-
-class WrongArgument(Exception):
-    def __init__(self, *args: object) -> None:
-        super().__init__(*args)
-
-
 class MainAppBody(Tk):
     def __init__(self, *args, **kwargs):
         Tk.__init__(self, *args, **kwargs)
@@ -153,14 +147,14 @@ class MainAppBody(Tk):
         self.edit_menu = edit_menu
 
         if current_language == "rus":
-            self.set_lang_menu(True)
+            self.set_lang_menu()
 
-    def set_lang_menu(self, from_main_app_body: bool = None):
-        # * If in `MainAppBody class` usage -> if current_language == "rus": self.set_lang_menu(True)
+    def set_lang_menu(self):
+        # * If in `MainAppBody class` usage -> if current_language == "rus": self.set_lang_menu()
         # * If in `Settings` -> after current_language is changed, parent.set_lang_menu()
         # ! Anywhere else -> DO NOT USE
-        match current_language, from_main_app_body:
-            case "eng", None:
+        match current_language:
+            case "eng":
                 self.menubar.entryconfig("Помощь...", label="Help")
                 self.menubar.entryconfig("Изменить", label="Edit")
                 self.menubar.entryconfig("Файл", label="File")
@@ -171,11 +165,7 @@ class MainAppBody(Tk):
                 self.edit_menu.entryconfig("Настройки", label="Settings")
                 self.help_menu.entryconfig("Помощь", label="Help")
                 self.help_menu.entryconfig("О приложении", label="About")
-            case "eng", _:
-                raise WrongArgument(f'Got wrong arguments "{current_language}" and "{from_main_app_body}"')
-            case "rus", None:
-                raise WrongArgument(f'Got wrong arguments "{current_language}" and "{from_main_app_body}"')
-            case "rus", _:
+            case "rus":
                 self.menubar.entryconfig("Help", label="Помощь...")
                 self.menubar.entryconfig("Edit", label="Изменить")
                 self.menubar.entryconfig("File", label="Файл")
@@ -186,6 +176,8 @@ class MainAppBody(Tk):
                 self.edit_menu.entryconfig("Settings", label="Настройки")
                 self.help_menu.entryconfig("Help", label="Помощь")
                 self.help_menu.entryconfig("About", label="О приложении")
+            case _:
+                raise ValueError(f'Got wrong value for current_language -> "{current_language}"')
 
     def show_frame(self, cont):
         """This is used to show any page (page MUST be listed in frame_collection)"""
