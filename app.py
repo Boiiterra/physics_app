@@ -760,11 +760,15 @@ class MainPage(Frame):
                                     _pressure = Decimal(iso_choric(Decimal(prev_p.get()), Decimal(prev_t.get()), temperature_2=Decimal(entry.get()))).quantize(Decimal('.001'))
                                     if int(str(_pressure).split(".")[1]) == 0:
                                         _pressure = str(_pressure).split(".")[0]
+                                    if int(_pressure) == 0:
+                                        _pressure = Decimal(0.001).quantize(Decimal('.001'))
                                 case 3:
                                     _temperature = entry.get()
                                     _volume = Decimal(iso_baric(Decimal(prev_t.get()), Decimal(prev_v.get()), temperature_2=Decimal(entry.get()))).quantize(Decimal('.001'))
                                     if int(str(_volume).split(".")[1]) == 0:
                                         _volume = str(_volume).split(".")[0]
+                                    if int(_volume) == 0:
+                                        _volume = Decimal(0.001).quantize(Decimal('.001'))
                                     _pressure = prev_p.get()
                                 case 4:
                                     _temperature = "None"
@@ -782,10 +786,14 @@ class MainPage(Frame):
                                     _pressure = Decimal(iso_therm(Decimal(prev_p.get()), Decimal(prev_v.get()), volume_2=Decimal(entry.get()))).quantize(Decimal('.001'))
                                     if int(str(_pressure).split(".")[1]) == 0:
                                         _pressure = str(_pressure).split(".")[0]
+                                    if int(_pressure) == 0:
+                                        _pressure = Decimal(0.001).quantize(Decimal('.001'))
                                 case 3:
                                     _temperature = Decimal(iso_baric(Decimal(prev_t.get()), Decimal(prev_v.get()), volume_2=Decimal(entry.get()))).quantize(Decimal('.001'))
                                     if int(str(_temperature).split(".")[1]) == 0:
                                         _temperature = str(_temperature).split(".")[0]
+                                    if int(_temperature) == 0:
+                                        _temperature = Decimal(0.001).quantize(Decimal('.001'))
                                     _volume = entry.get()
                                     _pressure = prev_p.get()
                                 case 4:
@@ -802,6 +810,8 @@ class MainPage(Frame):
                                     _temperature = Decimal(iso_choric(Decimal(prev_p.get()), Decimal(prev_t.get()), pressure_2=Decimal(entry.get()))).quantize(Decimal('.001'))
                                     if int(str(_temperature).split(".")[1]) == 0:
                                         _temperature = str(_temperature).split(".")[0]
+                                    if int(_temperature) == 0:
+                                        _temperature = Decimal(0.001).quantize(Decimal('.001'))
                                     _volume = prev_v.get()
                                     _pressure = entry.get()
                                 case 2:
@@ -809,6 +819,8 @@ class MainPage(Frame):
                                     _volume = Decimal(iso_therm(Decimal(prev_p.get()), Decimal(prev_v.get()), pressure_2=Decimal(entry.get()))).quantize(Decimal('.001'))
                                     if int(str(_volume).split(".")[1]) == 0:
                                         _volume = str(_volume).split(".")[0]
+                                    if int(_volume) == 0:
+                                        _volume = Decimal(0.001).quantize(Decimal('.001'))
                                     _pressure = entry.get()
                                 case 4:
                                     _temperature = "None"
