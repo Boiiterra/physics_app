@@ -832,7 +832,7 @@ class MainPage(Frame):
                                     _pressure = "None"
                     match current_language:
                         case "rus":
-                            msg = f"Новык данные:\n1. Температура = {_temperature}\n2. Объём = {_volume}\n3. Давление = {_pressure}\n4. Процесс = {processes[current_process - 1]}"
+                            msg = f"Новые данные:\n1. Температура = {_temperature}\n2. Объём = {_volume}\n3. Давление = {_pressure}\n4. Процесс = {processes[current_process - 1]}"
                         case "eng":
                             msg = f"New dot info:\n1. Temperature = {_temperature}\n2. Volume = {_volume}\n3. Pressure = {_pressure}\n4. Process = {processes[current_process - 1]}"
                     showinfo("Info -- data", msg)
