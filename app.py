@@ -987,7 +987,24 @@ class MainPage(Frame):
                         if len(data) == 1:
                             ax.plot(data[0][2], data[0][1], "bo") # y, x
                         else:
-                            ...
+                            coordinates_x = np.empty(0) # Create empty array numpy
+                            coordinates_y = np.empty(0) # Create empty array numpy
+                            for _position, sub_data in enumerate(data):
+                                match sub_data[0]:
+                                    case 1: # Isochor
+                                        coordinates_y = np.hstack([coordinates_y, np.array([Decimal(data[_position - 1][2]), Decimal(data[_position][2])])])
+                                        coordinates_x = np.hstack([coordinates_x, np.array([Decimal(data[_position - 1][1]), Decimal(data[_position][1])])])
+                                    case 2: ... # Isotherm (Pressure data[1] and Volume data[2])
+                                        # coordinates_y = np.hstack([coordinates_y, np.arange(float(data[_position - 1][2]), float(data[_position][2])+float(0.001), 0.001)])
+                                        # coordinates_x = np.hstack([coordinates_x, np.arange(float(data[_position - 1][1]), float(data[_position][1])+float(0.001), 0.001)])
+                                    case 3: # Isobaric
+                                        coordinates_y = np.hstack([coordinates_y, np.array([Decimal(data[_position - 1][2]), Decimal(data[_position][2])])])
+                                        coordinates_x = np.hstack([coordinates_x, np.array([Decimal(data[_position - 1][1]), Decimal(data[_position][1])])])
+                                    case 4: ... # Adiabatic
+                                    case 5: ... # Polytrophic
+                                    case _:
+                                        continue
+                            ax.plot(coordinates_y, coordinates_x, "-o")
                     case 1:
                         ax.set_title("P(T)")
                         ax.set_ylabel("P")
@@ -995,7 +1012,24 @@ class MainPage(Frame):
                         if len(data) == 1:
                             ax.plot(data[0][3], data[0][1], "bo")
                         else:
-                            ...
+                            coordinates_x = np.empty(0) # Create empty array numpy
+                            coordinates_y = np.empty(0) # Create empty array numpy
+                            for _position, sub_data in enumerate(data):
+                                match sub_data[0]:
+                                    case 1: # Isochor
+                                        coordinates_x = np.hstack([coordinates_x, np.array([Decimal(data[_position - 1][3]), Decimal(data[_position][3])])])
+                                        coordinates_y = np.hstack([coordinates_y, np.array([Decimal(data[_position - 1][1]), Decimal(data[_position][1])])])
+                                    case 2: # Isotherm
+                                        coordinates_x = np.hstack([coordinates_x, np.array([Decimal(data[_position - 1][3]), Decimal(data[_position][3])])])
+                                        coordinates_y = np.hstack([coordinates_y, np.array([Decimal(data[_position - 1][1]), Decimal(data[_position][1])])])
+                                    case 3: # Isobaric
+                                        coordinates_x = np.hstack([coordinates_x, np.array([Decimal(data[_position - 1][3]), Decimal(data[_position][3])])])
+                                        coordinates_y = np.hstack([coordinates_y, np.array([Decimal(data[_position - 1][1]), Decimal(data[_position][1])])])
+                                    case 4: ... # Adiabatic
+                                    case 5: ... # Polytrophic
+                                    case _:
+                                        continue
+                            ax.plot(coordinates_x, coordinates_y, "-o")
                     case 2:
                         ax.set_title("V(T)")
                         ax.set_ylabel("V")
@@ -1003,7 +1037,24 @@ class MainPage(Frame):
                         if len(data) == 1:
                             ax.plot(data[0][3], data[0][2], "bo")
                         else:
-                            ...
+                            coordinates_x = np.empty(0) # Create empty array numpy
+                            coordinates_y = np.empty(0) # Create empty array numpy
+                            for _position, sub_data in enumerate(data):
+                                match sub_data[0]:
+                                    case 1: # Isochor
+                                        coordinates_y = np.hstack([coordinates_y, np.array([Decimal(data[_position - 1][3]), Decimal(data[_position][3])])])
+                                        coordinates_x = np.hstack([coordinates_x, np.array([Decimal(data[_position - 1][2]), Decimal(data[_position][2])])])
+                                    case 2: # Isotherm
+                                        coordinates_y = np.hstack([coordinates_y, np.array([Decimal(data[_position - 1][3]), Decimal(data[_position][3])])])
+                                        coordinates_x = np.hstack([coordinates_x, np.array([Decimal(data[_position - 1][2]), Decimal(data[_position][2])])])
+                                    case 3: # Isobaric
+                                        coordinates_y = np.hstack([coordinates_y, np.array([Decimal(data[_position - 1][3]), Decimal(data[_position][3])])])
+                                        coordinates_x = np.hstack([coordinates_x, np.array([Decimal(data[_position - 1][2]), Decimal(data[_position][2])])])
+                                    case 4: ... # Adiabatic
+                                    case 5: ... # Polytrophic
+                                    case _:
+                                        continue
+                            ax.plot(coordinates_y, coordinates_x, "-o")
                 canvas.draw()
             else:
                 if pop_up:
