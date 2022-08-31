@@ -861,7 +861,7 @@ class MainPage(Frame):
         def add_dot(first: bool = False, _data: list[str] = None):
             if blocked_entries:
                 entry = [widget for widget in [self.new_t, self.new_v, self.new_p] if widget["state"] == "normal"][0]
-                if Decimal(entry.get()) != (0):
+                if Decimal(entry.get().replace(",", ".")) != (0):
                     match str(entry)[-1]:
                         case "y":
                             match current_process:
