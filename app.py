@@ -25,9 +25,9 @@ DIGITS = 3 # * digits after dot: 3 -> 0.001;
 
 
 # temp or session variables
-# * data stores [[Process: int, Pressure: int | decimal, Volume: int | Decimal, Temperature: int | Decimal], ...]; Default/On-launch value -> [] (empty list)
+# * data stores [[Process: int, Pressure: str, Volume: str, Temperature: str], ...]; Default/On-launch value -> [] (empty list)
 # ! DO NOT STORE NUMPY NDARRAY IN DATA | DATA STORES ONLY THOSE VALUES THAT ARE ENTERED BY USER
-data: list[list[int | Decimal]] = []
+data: list[list[int | str]] = []
 temperature: str = "k"  # * ONLY stores: "c" | "f" | "k" ; Default is "k" (c -> Celsius, f -> Fahrenheit, k -> Kelvin)
 # * Only stores two of the "new_*" entries from main_page: needed in validator for iso processes
 blocked_entries: list[Entry] = []
