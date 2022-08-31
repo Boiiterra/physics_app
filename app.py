@@ -991,7 +991,7 @@ class MainPage(Frame):
                         ax.set_ylabel("P")
                         ax.set_xlabel("V")
                         if len(data) == 1:
-                            ax.plot(data[0][2], data[0][1], "bo")
+                            ax.plot(data[0][2], data[0][1], "bo") # y, x
                         else:
                             ...
                     case 1:
