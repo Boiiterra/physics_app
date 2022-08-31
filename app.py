@@ -960,7 +960,7 @@ class MainPage(Frame):
                         msg = "For adding new dot you need to enter some data."
                 showinfo("Info -- no data", msg)
 
-        def refresh_graph(is_empty: bool = False):
+        def refresh_graph(is_empty: bool = False, pop_up: bool = False):
             if is_empty:
                 ax.clear()
                 match current_graph:
@@ -1006,12 +1006,13 @@ class MainPage(Frame):
                             ...
                 canvas.draw()
             else:
-                match current_language:
-                    case "rus":
-                        msg =  "Перед перерисовкой графика необходимо ввести данные."
-                    case "eng":
-                        msg = "Before refreshing graph you need to enter data."
-                showinfo("Info -- no data", msg)
+                if pop_up:
+                    match current_language:
+                        case "rus":
+                            msg =  "Перед перерисовкой графика необходимо ввести данные."
+                        case "eng":
+                            msg = "Before refreshing graph you need to enter data."
+                    showinfo("Info -- no data", msg)
 
         def del_prev_dot():
             if data:
