@@ -208,47 +208,41 @@ class MainPage(Frame):
                     graph_pv.config(state="disabled", cursor="")
                     graph_pt.config(state="normal", cursor="hand2")
                     graph_vt.config(state="normal", cursor="hand2")
-
-                    ax.clear()
-                    if data:
-                        if len(data) == 1:
-                            ax.plot(data[0][2], data[0][1], "bo")
-                    ax.set_title("P(V)")
-                    ax.set_ylabel("P")
-                    ax.set_xlabel("V")
-                    canvas.draw()
-
                     current_graph = new_graph
+                    try:
+                        refresh_graph(pop_up=False)
+                    except NameError:
+                        ax.clear()
+                        ax.set_title("P(V)")
+                        ax.set_ylabel("P")
+                        ax.set_xlabel("V")
+                        canvas.draw()
                 case 1: # P(T)
                     graph_pv.config(state="normal", cursor="hand2")
                     graph_pt.config(state="disabled", cursor="")
                     graph_vt.config(state="normal", cursor="hand2")
-
-                    ax.clear()
-                    if data:
-                        if len(data) == 1:
-                            ax.plot(data[0][3], data[0][1], "bo")
-                    ax.set_title("P(T)")
-                    ax.set_ylabel("P")
-                    ax.set_xlabel("T")
-                    canvas.draw()
-
                     current_graph = new_graph
+                    try:
+                        refresh_graph(pop_up=False)
+                    except NameError:
+                        ax.clear()
+                        ax.set_title("P(T)")
+                        ax.set_ylabel("P")
+                        ax.set_xlabel("T")
+                        canvas.draw()
                 case 2: # V(T)
                     graph_pv.config(state="normal", cursor="hand2")
                     graph_pt.config(state="normal", cursor="hand2")
                     graph_vt.config(state="disabled", cursor="")
-
-                    ax.clear()
-                    if data:
-                        if len(data) == 1:
-                            ax.plot(data[0][3], data[0][2], "bo")
-                    ax.set_title("V(T)")
-                    ax.set_ylabel("V")
-                    ax.set_xlabel("T")
-                    canvas.draw()
-
                     current_graph = new_graph
+                    try:
+                        refresh_graph(pop_up=False)
+                    except NameError:
+                        ax.clear()
+                        ax.set_title("V(T)")
+                        ax.set_ylabel("V")
+                        ax.set_xlabel("T")
+                        canvas.draw()
                 case _:
                     if isinstance(new_graph, int):
                         raise TypeError(f"Expected int but got {type(new_graph)}")
