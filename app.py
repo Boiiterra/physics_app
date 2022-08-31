@@ -935,7 +935,7 @@ class MainPage(Frame):
                                     _temperature = "None"
                                     _volume = "None"
                                     _pressure = "None"
-                    data.append([current_process, _pressure, _volume, _temperature])
+                    data.append([current_process, str(_pressure), str(_volume), str(_temperature)])
                     change_prev(_pressure, _volume, _temperature, True)
                     entry.delete(0, "end")
                     refresh_graph()
