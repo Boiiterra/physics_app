@@ -30,6 +30,7 @@ Polytropic: $pV^n=const$
 - $p$ is the pressure
 - $V$ is volume
 - $n$ is the polytropic index -> $n=1/(γ−1)$
+- Temperature needs to be found using: $\frac{p_1\times V_1}{T_1}=\frac{p_2\times V_2}{T_2}$
 ___
 
 # Physics app
