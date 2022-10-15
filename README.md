@@ -5,7 +5,7 @@ ___
 
 Code style: Black default \
 Requirement: Python 3.10 and/or above \
-Main formula for comparing same substance in different conditions: $\frac{P\times V}{T}=\frac{P_1\times V_1}{T_1}=const$
+Main formula for comparing same substance in different conditions: $\frac{p\times V}{T}=\frac{p_1\times V_1}{T_1}=const$
 
 Formulas:
 
